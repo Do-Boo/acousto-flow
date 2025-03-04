@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="AcoustoFlow - 음향 장비 관리 및 회의실 예약 시스템">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="AcoustoFlow">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>AcoustoFlow</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- 폰트 로드 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #F4F4F4;
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #F4F4F4;
+      z-index: 9999;
+    }
+    
+    .loading-content {
+      text-align: center;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(15, 98, 254, 0.2);
+      border-top: 5px solid #0F62FE;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    .loading-text {
+      color: #262626;
+      font-size: 18px;
+      font-weight: 500;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #161616;
+      }
+      
+      .loading {
+        background-color: #161616;
+      }
+      
+      .loading-text {
+        color: #F4F4F4;
+      }
+    }
+  </style>
+  <!-- This script adds the flutter initialization JS code -->
+  <script src="flutter.js" defer></script>
+</head>
+<body>
+  <!-- 로딩 화면 -->
+  <div class="loading" id="loading">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">AcoustoFlow 로딩 중...</div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('load', function() {
+      // 앱 로드 완료 시 로딩 화면 숨기기
+      window.addEventListener('flutter-first-frame', function() {
+        var loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+          loadingElement.style.opacity = '0';
+          loadingElement.style.transition = 'opacity 0.5s ease';
+          setTimeout(function() {
+            loadingElement.style.display = 'none';
+          }, 500);
+        }
+      });
+
+      // Flutter 웹 초기화 (최신 방식)
+      var engineInitializer = _flutter.loader;
+      engineInitializer.loadEntrypoint({
+        onEntrypointLoaded: async function(engineInitializer) {
+          let appRunner = await engineInitializer.initializeEngine({
+            // 필요한 경우 추가 옵션 설정
+          });
+          await appRunner.runApp();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
