@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AcoustoFlow - UI Components Sheet</title>
+  
+  <style>
+    :root {
+      /* 색상 변수 - Threads 스타일 다크 모드 */
+      --background: #000000;
+      --ui-background: #121212;
+      --ui-01: #1e1e1e;
+      --ui-02: #262626;
+      --ui-03: #333333;
+      --ui-04: #555555;
+      --text-01: #ffffff;
+      --text-02: #ececec;
+      --text-03: #8e8e8e;
+      --text-04: #737373;
+      --accent: #0095f6;
+      --accent-hover: #1877f2;
+      --border: #333333;
+      --support-01: #ed4956; /* 빨강 - 긴급/오류 */
+      --support-02: #70c050; /* 초록 - 성공/온라인 */
+      --support-03: #ffcc00; /* 노랑 - 주의/경고 */
+      --support-04: #0095f6; /* 파랑 - 정보/액션 */
+      
+      /* 그라데이션 */
+      --gradient-01: linear-gradient(45deg, #fa7e1e, #d62976, #962fbf, #4f5bd5);
+      
+      /* 스페이싱 */
+      --spacing-01: 0.25rem;
+      --spacing-02: 0.5rem;
+      --spacing-03: 0.75rem;
+      --spacing-04: 1rem;
+      --spacing-05: 1.5rem;
+      --spacing-06: 2rem;
+      
+      /* 테두리 반경 */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text-01);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+    }
+    
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      margin-bottom: var(--spacing-06);
+      padding-bottom: var(--spacing-04);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-02);
+    }
+    
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: var(--spacing-05) 0 var(--spacing-03);
+      padding-bottom: var(--spacing-02);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: var(--spacing-04) 0 var(--spacing-02);
+    }
+    
+    p {
+      margin-bottom: var(--spacing-03);
+      font-size: 14px;
+    }
+    
+    .component-group {
+      margin-bottom: var(--spacing-06);
+      background-color: var(--ui-background);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-04);
+    }
+    
+    .component-preview {
+      background-color: var(--ui-01);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-04);
+      margin: var(--spacing-03) 0;
+    }
+    
+    .component-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--spacing-04);
+      margin: var(--spacing-03) 0;
+    }
+    
+    .component-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--spacing-03);
+      background-color: var(--ui-01);
+      border-radius: var(--radius-md);
+    }
+    
+    .component-name {
+      margin-top: var(--spacing-02);
+      font-size: 12px;
+      color: var(--text-03);
+      text-align: center;
+    }
+    
+    code {
+      font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 12px;
+      color: var(--text-02);
+      background-color: var(--ui-02);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+    }
+    
+    pre {
+      background-color: var(--ui-02);
+      padding: var(--spacing-03);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin: var(--spacing-03) 0;
+    }
+    
+    pre code {
+      background-color: transparent;
+      padding: 0;
+    }
+    
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: var(--spacing-03);
+    }
+    
+    .color-item {
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    
+    .color-preview {
+      height: 80px;
+    }
+    
+    .color-info {
+      padding: var(--spacing-02);
+      background-color: var(--ui-01);
+      font-size: 12px;
+    }
+    
+    .color-name {
+      font-weight: 600;
+    }
+    
+    .color-value {
+      color: var(--text-03);
+    }
+    
+    /* 타이포그래피 */
+    .typography-preview {
+      margin: var(--spacing-02) 0;
+    }
+    
+    .font-sample {
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .font-sample-name {
+      font-size: 12px;
+      color: var(--text-03);
+      margin-bottom: var(--spacing-01);
+    }
+    
+    /* 컴포넌트 스타일 */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-01);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--ui-01);
+    }
+    
+    .btn-text {
+      background-color: transparent;
+      color: var(--text-01);
+      padding: 8px 12px;
+    }
+    
+    .btn-text:hover {
+      background-color: var(--ui-01);
+    }
+    
+    .btn-danger {
+      background-color: var(--support-01);
+      color: white;
+    }
+    
+    .btn-sm {
+      font-size: 12px;
+      padding: 6px 12px;
+    }
+    
+    .btn-lg {
+      font-size: 16px;
+      padding: 12px 20px;
+    }
+    
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .icon {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .icon-sm {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .icon-lg {
+      width: 32px;
+      height: 32px;
+    }
+    
+    /* 아바타 */
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: var(--ui-02);
+    }
+    
+    .avatar-sm {
+      width: 24px;
+      height: 24px;
+    }
+    
+    .avatar-lg {
+      width: 48px;
+      height: 48px;
+    }
+    
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    /* 카드 */
+    .card {
+      background-color: var(--ui-background);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      padding: var(--spacing-03) var(--spacing-04);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+    }
+    
+    .card-content {
+      padding: var(--spacing-04);
+    }
+    
+    .card-footer {
+      padding: var(--spacing-03) var(--spacing-04);
+      border-top: 1px solid var(--border);
+    }
+    
+    /* 입력 요소 */
+    .input-group {
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .input-label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: var(--spacing-02);
+      color: var(--text-02);
+    }
+    
+    .input {
+      width: 100%;
+      background-color: var(--ui-01);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text-01);
+      transition: border-color 0.2s;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    /* 배지 */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .badge-primary {
+      background-color: rgba(0, 149, 246, 0.1);
+      color: var(--accent);
+    }
+    
+    .badge-danger {
+      background-color: rgba(237, 73, 86, 0.1);
+      color: var(--support-01);
+    }
+    
+    .badge-success {
+      background-color: rgba(112, 192, 80, 0.1);
+      color: var(--support-02);
+    }
+    
+    .badge-warning {
+      background-color: rgba(255, 204, 0, 0.1);
+      color: var(--support-03);
+    }
+    
+    /* 피드 아이템 */
+    .feed-item {
+      padding: var(--spacing-04);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .feed-header {
+      display: flex;
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .feed-user-info {
+      flex: 1;
+      margin-left: var(--spacing-03);
+    }
+    
+    .feed-user-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .feed-meta {
+      font-size: 13px;
+      color: var(--text-03);
+      margin-top: 2px;
+    }
+    
+    .feed-content {
+      font-size: 14px;
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .feed-media {
+      margin-bottom: var(--spacing-03);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background-color: var(--ui-01);
+    }
+    
+    .feed-actions {
+      display: flex;
+      align-items: center;
+    }
+    
+    .feed-action {
+      display: flex;
+      align-items: center;
+      margin-right: var(--spacing-04);
+      color: var(--text-01);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .feed-action svg {
+      margin-right: 6px;
+    }
+    
+    /* 스위치 */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--ui-03);
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--accent);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    
+    /* 테이블 */
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table th,
+    .table td {
+      padding: var(--spacing-03);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .table th {
+      font-weight: 600;
+      color: var(--text-02);
+      font-size: 13px;
+    }
+    
+    .table td {
+      font-size: 14px;
+    }
+    
+    /* 탭 */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .tab {
+      padding: var(--spacing-03) var(--spacing-04);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-03);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .tab.active {
+      color: var(--text-01);
+    }
+    
+    .tab.active:after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--text-01);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AcoustoFlow UI Components</h1>
+      <p>이 문서는 AcoustoFlow 앱의 UI 컴포넌트 가이드라인을 제공합니다.</p>
+    </header>
+    
+    <section class="component-group">
+      <h2>색상 시스템</h2>
+      <p>AcoustoFlow는 Threads 스타일의 다크 테마를 기본으로 사용합니다.</p>
+      
+      <h3>기본 색상</h3>
+      <div class="color-grid">
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #000000;"></div>
+          <div class="color-info">
+            <div class="color-name">Background</div>
+            <div class="color-value">#000000</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #121212;"></div>
+          <div class="color-info">
+            <div class="color-name">UI Background</div>
+            <div class="color-value">#121212</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #1e1e1e;"></div>
+          <div class="color-info">
+            <div class="color-name">UI-01</div>
+            <div class="color-value">#1e1e1e</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #262626;"></div>
+          <div class="color-info">
+            <div class="color-name">UI-02</div>
+            <div class="color-value">#262626</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #333333;"></div>
+          <div class="color-info">
+            <div class="color-name">UI-03 / Border</div>
+            <div class="color-value">#333333</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #555555;"></div>
+          <div class="color-info">
+            <div class="color-name">UI-04</div>
+            <div class="color-value">#555555</div>
+          </div>
+        </div>
+      </div>
+      
+      <h3>텍스트 색상</h3>
+      <div class="color-grid">
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #ffffff;"></div>
+          <div class="color-info">
+            <div class="color-name">Text-01</div>
+            <div class="color-value">#ffffff</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #ececec;"></div>
+          <div class="color-info">
+            <div class="color-name">Text-02</div>
+            <div class="color-value">#ececec</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #8e8e8e;"></div>
+          <div class="color-info">
+            <div class="color-name">Text-03</div>
+            <div class="color-value">#8e8e8e</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #737373;"></div>
+          <div class="color-info">
+            <div class="color-name">Text-04</div>
+            <div class="color-value">#737373</div>
+          </div>
+        </div>
+      </div>
+      
+      <h3>액센트 & 상태 색상</h3>
+      <div class="color-grid">
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #0095f6;"></div>
+          <div class="color-info">
+            <div class="color-name">Accent / Primary</div>
+            <div class="color-value">#0095f6</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #ed4956;"></div>
+          <div class="color-info">
+            <div class="color-name">Support-01 / Error</div>
+            <div class="color-value">#ed4956</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #70c050;"></div>
+          <div class="color-info">
+            <div class="color-name">Support-02 / Success</div>
+            <div class="color-value">#70c050</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background-color: #ffcc00;"></div>
+          <div class="color-info">
+            <div class="color-name">Support-03 / Warning</div>
+            <div class="color-value">#ffcc00</div>
+          </div>
+        </div>
+        <div class="color-item">
+          <div class="color-preview" style="background: linear-gradient(45deg, #fa7e1e, #d62976, #962fbf, #4f5bd5);"></div>
+          <div class="color-info">
+            <div class="color-name">Gradient-01</div>
+            <div class="color-value">Linear Gradient</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>타이포그래피</h2>
+      <p>AcoustoFlow는 시스템 폰트를 사용하여 네이티브 경험을 제공합니다.</p>
+      
+      <h3>폰트 패밀리</h3>
+      <div class="typography-preview">
+        <code>-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif</code>
+      </div>
+      
+      <h3>헤더</h3>
+      <div class="font-sample">
+        <div class="font-sample-name">H1 (24px, Bold)</div>
+        <div style="font-size: 24px; font-weight: 700;">회의실 예약 관리 시스템</div>
+      </div>
+      <div class="font-sample">
+        <div class="font-sample-name">H2 (20px, SemiBold)</div>
+        <div style="font-size: 20px; font-weight: 600;">장비 관리 대시보드</div>
+      </div>
+      <div class="font-sample">
+        <div class="font-sample-name">H3 (16px, SemiBold)</div>
+        <div style="font-size: 16px; font-weight: 600;">앞으로 예정된 회의</div>
+      </div>
+      
+      <h3>본문</h3>
+      <div class="font-sample">
+        <div class="font-sample-name">Body (14px, Regular)</div>
+        <div style="font-size: 14px; font-weight: 400;">3월 15-17일 전체 회의실 마이크 시스템 정기 점검이 진행됩니다. 해당 기간 회의실 예약시 음향 장비 사용이 제한될 수 있으니 참고 바랍니다.</div>
+      </div>
+      <div class="font-sample">
+        <div class="font-sample-name">Small Text (13px, Regular)</div>
+        <div style="font-size: 13px; font-weight: 400;">댓글 5개 • 26개의 좋아요 • 3시간 전</div>
+      </div>
+      <div class="font-sample">
+        <div class="font-sample-name">Caption (12px, Regular)</div>
+        <div style="font-size: 12px; font-weight: 400;">음향실 관리자 • 24시간 전 업데이트</div>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>버튼 & 인터랙션</h2>
+      <p>다양한 상황에 따른 버튼 스타일입니다.</p>
+      
+      <h3>기본 버튼</h3>
+      <div class="component-preview">
+        <button class="btn btn-primary">Primary Button</button>
+        <button class="btn btn-secondary">Secondary Button</button>
+        <button class="btn btn-text">Text Button</button>
+        <button class="btn btn-danger">Danger Button</button>
+      </div>
+      
+      <h3>크기 변형</h3>
+      <div class="component-preview">
+        <button class="btn btn-primary btn-sm">Small Button</button>
+        <button class="btn btn-primary">Default Button</button>
+        <button class="btn btn-primary btn-lg">Large Button</button>
+      </div>
+      
+      <h3>아이콘 버튼</h3>
+      <div class="component-preview">
+        <button class="btn btn-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+          </svg>
+        </button>
+        <button class="btn btn-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z" />
+          </svg>
+        </button>
+        <button class="btn btn-icon">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+            <path d="M21,12L14,5V9C7,10 4,15 3,20C5.5,16.5 9,14.9 14,14.9V19L21,12Z" />
+          </svg>
+        </button>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>아이콘</h2>
+      <p>Threads 스타일의 아이콘 세트입니다.</p>
+      
+      <h3>기본 아이콘</h3>
+      <div class="component-grid">
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M12,3L20,9V21H15V14H9V21H4V9L12,3Z" />
+          </svg>
+          <div class="component-name">홈</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+          </svg>
+          <div class="component-name">검색</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M5.41,21L6.12,17H2.12L2.47,15H6.47L7.53,9H3.53L3.88,7H7.88L8.59,3H10.59L9.88,7H15.88L16.59,3H18.59L17.88,7H21.88L21.53,9H17.53L16.47,15H20.47L20.12,17H16.12L15.41,21H13.41L14.12,17H8.12L7.41,21H5.41M9.53,9L8.47,15H14.47L15.53,9H9.53Z" />
+          </svg>
+          <div class="component-name">태그</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+          </svg>
+          <div class="component-name">좋아요</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z" />
+          </svg>
+          <div class="component-name">댓글</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M21,12L14,5V9C7,10 4,15 3,20C5.5,16.5 9,14.9 14,14.9V19L21,12Z" />
+          </svg>
+          <div class="component-name">공유</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+          </svg>
+          <div class="component-name">더 보기</div>
+        </div>
+        <div class="component-item">
+          <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+          </svg>
+          <div class="component-name">추가</div>
+        </div>
+      </div>
+      
+      <h3>크기 변형</h3>
+      <div class="component-preview">
+        <svg viewBox="0 0 24 24" class="icon-sm" fill="currentColor">
+          <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+        </svg>
+        <svg viewBox="0 0 24 24" class="icon" fill="currentColor">
+          <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+        </svg>
+        <svg viewBox="0 0 24 24" class="icon-lg" fill="currentColor">
+          <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+        </svg>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>아바타 & 프로필</h2>
+      <p>사용자 아바타 및 프로필 요소입니다.</p>
+      
+      <h3>아바타 크기</h3>
+      <div class="component-preview">
+        <div class="avatar avatar-sm">
+          <img src="https://via.placeholder.com/24" alt="프로필">
+        </div>
+        <div class="avatar">
+          <img src="https://via.placeholder.com/36" alt="프로필">
+        </div>
+        <div class="avatar avatar-lg">
+          <img src="https://via.placeholder.com/48" alt="프로필">
+        </div>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>입력 요소</h2>
+      <p>텍스트 입력, 체크박스, 스위치 등의 입력 요소입니다.</p>
+      
+      <h3>텍스트 입력</h3>
+      <div class="component-preview">
+        <div class="input-group">
+          <label class="input-label">이메일</label>
+          <input type="email" class="input" placeholder="이메일을 입력하세요">
+        </div>
+        <div class="input-group">
+          <label class="input-label">비밀번호</label>
+          <input type="password" class="input" placeholder="비밀번호를 입력하세요">
+        </div>
+      </div>
+      
+      <h3>스위치</h3>
+      <div class="component-preview">
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+        <label class="switch">
+          <input type="checkbox">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>카드 & 컨테이너</h2>
+      <p>정보를 그룹화하는 카드 및 컨테이너 요소입니다.</p>
+      
+      <h3>기본 카드</h3>
+      <div class="component-preview">
+        <div class="card" style="max-width: 400px;">
+          <div class="card-header">
+            <h3 class="card-title">작업 일정</h3>
+          </div>
+          <div class="card-content">
+            <p>3월 15-17일 전체 회의실 마이크 시스템 정기 점검이 진행됩니다.</p>
+          </div>
+          <div class="card-footer">
+            <button class="btn btn-text">자세히 보기</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>배지 & 태그</h2>
+      <p>콘텐츠를 분류하고 상태를 표시하는 배지입니다.</p>
+      
+      <h3>배지</h3>
+      <div class="component-preview">
+        <span class="badge badge-primary">회의실 지원</span>
+        <span class="badge badge-success">장비 관리</span>
+        <span class="badge badge-danger">긴급 요청</span>
+        <span class="badge badge-warning">공지사항</span>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>피드 아이템</h2>
+      <p>소셜 피드형 게시물 아이템입니다.</p>
+      
+      <h3>기본 피드 아이템</h3>
+      <div class="component-preview">
+        <div class="feed-item" style="border: none;">
+          <div class="feed-header">
+            <div class="avatar">
+              <img src="https://via.placeholder.com/36" alt="프로필">
+            </div>
+            <div class="feed-user-info">
+              <div class="feed-user-name">김민수</div>
+              <div class="feed-meta">
+                <span>18시간</span>
+                <span class="badge badge-primary" style="margin-left: 8px;">회의실 지원</span>
+              </div>
+            </div>
+            <button class="btn btn-icon" style="background-color: transparent;">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+              </svg>
+            </button>
+          </div>
+          <div class="feed-content">
+            3층 회의실B 마이크 교체 완료했습니다. 배터리 충전 상태 100% 확인했습니다. 다음 예약자 13:00 영업팀 김부장님.
+          </div>
+          <div class="feed-media" style="height: 120px; display: flex; align-items: center; justify-content: center; color: var(--text-03);">
+            작업 사진
+          </div>
+          <div class="feed-actions">
+            <button class="feed-action">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z" />
+              </svg>
+              5
+            </button>
+            <button class="feed-action">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9Z" />
+              </svg>
+              3
+            </button>
+            <button class="feed-action">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M21,12L14,5V9C7,10 4,15 3,20C5.5,16.5 9,14.9 14,14.9V19L21,12Z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>테이블</h2>
+      <p>데이터를 표 형태로 보여주는 요소입니다.</p>
+      
+      <div class="component-preview">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>장비명</th>
+              <th>위치</th>
+              <th>상태</th>
+              <th>마지막 점검일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>무선 마이크 세트 A</td>
+              <td>3층 회의실</td>
+              <td><span class="badge badge-success">정상</span></td>
+              <td>2023-02-15</td>
+            </tr>
+            <tr>
+              <td>프로젝터 P2000</td>
+              <td>대회의실</td>
+              <td><span class="badge badge-danger">점검 필요</span></td>
+              <td>2023-01-20</td>
+            </tr>
+            <tr>
+              <td>화상회의 카메라</td>
+              <td>4층 임원실</td>
+              <td><span class="badge badge-success">정상</span></td>
+              <td>2023-02-10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+    
+    <section class="component-group">
+      <h2>탭</h2>
+      <p>다른 콘텐츠 섹션으로 전환하는 탭 요소입니다.</p>
+      
+      <div class="component-preview">
+        <div class="tabs">
+          <div class="tab active">답글</div>
+          <div class="tab">전체: 2,688개</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
