@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
@@ -184,61 +185,69 @@ class _MeetingRoomsScreenState extends State<MeetingRoomsScreen> {
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
     final dividerColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
     
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          '회의실',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: textColor,
-            fontSize: 16,
-          ),
-        ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDarkMode
+          ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+          : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      child: Scaffold(
         backgroundColor: backgroundColor,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(
-            height: 1,
-            color: dividerColor,
+        appBar: AppBar(
+          title: Text(
+            '회의실',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontSize: 16,
+            ),
           ),
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          systemOverlayStyle: isDarkMode
+              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Divider(
+              height: 1,
+              color: dividerColor,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.qr_code_scanner, color: isDarkMode ? Colors.white : CarbonColors.gray80),
+              onPressed: () {
+                // Open QR code scanner
+                _showQRScanner();
+              },
+            ),
+            IconButton(
+              icon: Icon(HugeIcons.strokeRoundedFilterHorizontal, color: isDarkMode ? Colors.white : CarbonColors.gray80),
+              onPressed: () {
+                // Show filter options
+                _showFilterOptions();
+              },
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.qr_code_scanner, color: isDarkMode ? Colors.white : CarbonColors.gray80),
-            onPressed: () {
-              // Open QR code scanner
-              _showQRScanner();
-            },
-          ),
-          IconButton(
-            icon: Icon(HugeIcons.strokeRoundedFilterHorizontal, color: isDarkMode ? Colors.white : CarbonColors.gray80),
-            onPressed: () {
-              // Show filter options
-              _showFilterOptions();
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Search and filter bar
-          _buildSearchBar(),
-          
-          // Room list
-          Expanded(
-            child: _filteredRooms.isEmpty
-                ? _buildEmptyState()
-                : ListView.builder(
-                    itemCount: _filteredRooms.length,
-                    itemBuilder: (context, index) {
-                      final room = _filteredRooms[index];
-                      return _buildRoomCard(room);
-                    },
-                  ),
-          ),
-        ],
+        body: Column(
+          children: [
+            // Search and filter bar
+            _buildSearchBar(),
+            
+            // Room list
+            Expanded(
+              child: _filteredRooms.isEmpty
+                  ? _buildEmptyState()
+                  : ListView.builder(
+                      itemCount: _filteredRooms.length,
+                      itemBuilder: (context, index) {
+                        final room = _filteredRooms[index];
+                        return _buildRoomCard(room);
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

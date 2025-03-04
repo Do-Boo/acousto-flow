@@ -4,6 +4,7 @@ import 'package:hugeicons/hugeicons.dart' show HugeIcon, HugeIcons;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 // Import screens
 import 'screens/home_screen.dart';
@@ -162,6 +163,13 @@ class ThemeController extends GetxController {
 
   void _updateTheme() {
     Get.changeTheme(_isDarkMode.value ? _darkTheme : _lightTheme);
+    
+    // 테마 변경 시 상태 표시줄 스타일 업데이트
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: _isDarkMode.value ? Brightness.light : Brightness.dark,
+      statusBarBrightness: _isDarkMode.value ? Brightness.dark : Brightness.light,
+    ));
   }
 }
 
@@ -173,6 +181,13 @@ void main() async {
   
   // Initialize GetX
   Get.put(ThemeController());
+  
+  // 상태 표시줄 스타일 설정 - 라이트 모드
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+    statusBarBrightness: Brightness.light,
+  ));
   
   runApp(AcoustoFlowApp());
 }
@@ -219,19 +234,30 @@ class _MainScreenState extends State<MainScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
     
-    return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomAppBar(
-        color: backgroundColor,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(flex: 2, child: _buildBottomNavItem(0, HugeIcons.strokeRoundedHome11, '')),
-            Expanded(flex: 2, child: _buildBottomNavItem(1, HugeIcons.strokeRoundedCalendar03, '')),
-            Expanded(flex: 3, child: _buildCenterButton()),
-            Expanded(flex: 2, child: _buildBottomNavItem(2, HugeIcons.strokeRoundedComment01, '')),
-            Expanded(flex: 2, child: _buildBottomNavItem(3, HugeIcons.strokeRoundedAssignments, '')),
-          ],
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDarkMode
+          ? SystemUiOverlayStyle.light.copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: backgroundColor,
+            )
+          : SystemUiOverlayStyle.dark.copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: backgroundColor,
+            ),
+      child: Scaffold(
+        body: _screens[_currentIndex],
+        bottomNavigationBar: BottomAppBar(
+          color: backgroundColor,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Expanded(flex: 2, child: _buildBottomNavItem(0, HugeIcons.strokeRoundedHome11, '')),
+              Expanded(flex: 2, child: _buildBottomNavItem(1, HugeIcons.strokeRoundedCalendar03, '')),
+              Expanded(flex: 3, child: _buildCenterButton()),
+              Expanded(flex: 2, child: _buildBottomNavItem(2, HugeIcons.strokeRoundedComment01, '')),
+              Expanded(flex: 2, child: _buildBottomNavItem(3, HugeIcons.strokeRoundedAssignments, '')),
+            ],
+          ),
         ),
       ),
     );

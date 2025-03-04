@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 import '../utils/carbon_colors.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -131,54 +132,62 @@ class _FeedScreenState extends State<FeedScreen> {
     final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
     
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          '피드',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: textColor,
-            fontSize: 16,
-          ),
-        ),
-        centerTitle: false,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDarkMode
+          ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+          : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      child: Scaffold(
         backgroundColor: backgroundColor,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(
-            height: 1,
-            color: isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20,
+        appBar: AppBar(
+          title: Text(
+            '피드',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: textColor,
+              fontSize: 16,
+            ),
           ),
+          centerTitle: false,
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          systemOverlayStyle: isDarkMode
+              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Divider(
+              height: 1,
+              color: isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(HugeIcons.strokeRoundedSearch01, color: isDarkMode ? Colors.white : CarbonColors.gray80),
+              onPressed: () {
+                // Search posts
+              },
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(HugeIcons.strokeRoundedSearch01, color: isDarkMode ? Colors.white : CarbonColors.gray80),
-            onPressed: () {
-              // Search posts
-            },
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // Refresh posts
-          await Future.delayed(const Duration(seconds: 1));
-          setState(() {
-            // In a real app, this would fetch new posts
-          });
-        },
-        color: CarbonColors.blue60,
-        child: _posts.isEmpty
-            ? _buildEmptyState()
-            : ListView.builder(
-                itemCount: _posts.length,
-                itemBuilder: (context, index) {
-                  final post = _posts[index];
-                  return _buildPostCard(post);
-                },
-              ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            // Refresh posts
+            await Future.delayed(const Duration(seconds: 1));
+            setState(() {
+              // In a real app, this would fetch new posts
+            });
+          },
+          color: CarbonColors.blue60,
+          child: _posts.isEmpty
+              ? _buildEmptyState()
+              : ListView.builder(
+                  itemCount: _posts.length,
+                  itemBuilder: (context, index) {
+                    final post = _posts[index];
+                    return _buildPostCard(post);
+                  },
+                ),
+        ),
       ),
     );
   }

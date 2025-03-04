@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 import '../utils/carbon_colors.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -102,98 +103,112 @@ class _HomeScreenState extends State<HomeScreen> {
     final secondaryColor = isDarkMode ? CarbonColors.gray60 : CarbonColors.gray70;
     final dividerColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
     
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          '홈',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: textColor,
-          ),
-        ),
-        centerTitle: false,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDarkMode
+          ? SystemUiOverlayStyle.light.copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: backgroundColor,
+            )
+          : SystemUiOverlayStyle.dark.copyWith(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: backgroundColor,
+            ),
+      child: Scaffold(
         backgroundColor: backgroundColor,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(
-            height: 1,
-            color: dividerColor,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.notifications_outlined,
+        appBar: AppBar(
+          title: Text(
+            '홈',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
               color: textColor,
             ),
-            onPressed: () {
-              // 알림 메뉴 표시
-            },
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // 데이터 새로고침
-          await Future.delayed(const Duration(seconds: 1));
-          setState(() {});
-        },
-        color: CarbonColors.blue60,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 환영 메시지 및 날짜
-              Text(
-                '안녕하세요, 김도유님',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
+          centerTitle: false,
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          systemOverlayStyle: isDarkMode
+              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Divider(
+              height: 1,
+              color: dividerColor,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.notifications_outlined,
+                color: textColor,
               ),
-              const SizedBox(height: 4),
-              Text(
-                DateFormat('yyyy년 MM월 dd일 EEEE', 'ko_KR').format(DateTime.now()),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: secondaryColor,
+              onPressed: () {
+                // 알림 메뉴 표시
+              },
+            ),
+          ],
+        ),
+        body: RefreshIndicator(
+          onRefresh: () async {
+            // 데이터 새로고침
+            await Future.delayed(const Duration(seconds: 1));
+            setState(() {});
+          },
+          color: CarbonColors.blue60,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 환영 메시지 및 날짜
+                Text(
+                  '안녕하세요, 김도유님',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              
-              // 오늘의 일정 섹션
-              _buildSectionHeader('오늘의 일정', '더 보기', () {
-                Get.toNamed('/calendar');
-              }),
-              const SizedBox(height: 12),
-              _buildTodayEvents(),
-              const SizedBox(height: 24),
-              
-              // 회의실 현황 섹션
-              _buildSectionHeader('회의실 현황', '모두 보기', () {
-                Get.toNamed('/meeting-rooms');
-              }),
-              const SizedBox(height: 12),
-              _buildRoomStatus(),
-              const SizedBox(height: 24),
-              
-              // 최근 활동 피드
-              _buildSectionHeader('최근 피드', '더 보기', () {
-                Get.toNamed('/feed');
-              }),
-              const SizedBox(height: 12),
-              _buildRecentPosts(),
-              const SizedBox(height: 24),
-              
-              // 빠른 액션 버튼들
-              _buildQuickActions(),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 4),
+                Text(
+                  DateFormat('yyyy년 MM월 dd일 EEEE', 'ko_KR').format(DateTime.now()),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: secondaryColor,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // 오늘의 일정 섹션
+                _buildSectionHeader('오늘의 일정', '더 보기', () {
+                  Get.toNamed('/calendar');
+                }),
+                const SizedBox(height: 12),
+                _buildTodayEvents(),
+                const SizedBox(height: 24),
+                
+                // 회의실 현황 섹션
+                _buildSectionHeader('회의실 현황', '모두 보기', () {
+                  Get.toNamed('/meeting-rooms');
+                }),
+                const SizedBox(height: 12),
+                _buildRoomStatus(),
+                const SizedBox(height: 24),
+                
+                // 최근 활동 피드
+                _buildSectionHeader('최근 피드', '더 보기', () {
+                  Get.toNamed('/feed');
+                }),
+                const SizedBox(height: 12),
+                _buildRecentPosts(),
+                const SizedBox(height: 24),
+                
+                // 빠른 액션 버튼들
+                _buildQuickActions(),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),

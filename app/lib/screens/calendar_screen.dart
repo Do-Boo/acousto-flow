@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 import '../utils/carbon_colors.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -113,55 +114,63 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
     final dividerColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
     
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: Text(
-          '캘린더',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: textColor,
-          ),
-        ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: isDarkMode
+          ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+          : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      child: Scaffold(
         backgroundColor: backgroundColor,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Divider(
-            height: 1,
-            color: dividerColor,
+        appBar: AppBar(
+          title: Text(
+            '캘린더',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: textColor,
+            ),
           ),
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          systemOverlayStyle: isDarkMode
+              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
+              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(1),
+            child: Divider(
+              height: 1,
+              color: dividerColor,
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(HugeIcons.strokeRoundedFilterHorizontal, color: textColor),
+              onPressed: () {
+                _showFilterDialog();
+              },
+            ),
+            IconButton(
+              icon: Icon(HugeIcons.strokeRoundedAdd01, color: textColor),
+              onPressed: () {
+                _showAddEventDialog();
+              },
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: Icon(HugeIcons.strokeRoundedFilterHorizontal, color: textColor),
-            onPressed: () {
-              _showFilterDialog();
-            },
-          ),
-          IconButton(
-            icon: Icon(HugeIcons.strokeRoundedAdd01, color: textColor),
-            onPressed: () {
-              _showAddEventDialog();
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _buildCalendarHeader(),
-          _buildWeekdayHeader(),
-          Expanded(
-            flex: 5,
-            child: _buildCalendarGrid(),
-          ),
-          Divider(height: 1, color: dividerColor),
-          Expanded(
-            flex: 5,
-            child: _buildEventsList(),
-          ),
-        ],
+        body: Column(
+          children: [
+            _buildCalendarHeader(),
+            _buildWeekdayHeader(),
+            Expanded(
+              flex: 5,
+              child: _buildCalendarGrid(),
+            ),
+            Divider(height: 1, color: dividerColor),
+            Expanded(
+              flex: 5,
+              child: _buildEventsList(),
+            ),
+          ],
+        ),
       ),
     );
   }
