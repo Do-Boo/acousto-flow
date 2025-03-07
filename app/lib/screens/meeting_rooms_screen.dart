@@ -6,6 +6,10 @@ import 'package:intl/intl.dart';
 import '../utils/carbon_colors.dart';
 
 class MeetingRoomsScreen extends StatefulWidget {
+  final bool hideAppBar;
+  
+  MeetingRoomsScreen({Key? key, this.hideAppBar = false}) : super(key: key);
+  
   @override
   _MeetingRoomsScreenState createState() => _MeetingRoomsScreenState();
 }
@@ -183,33 +187,40 @@ class _MeetingRoomsScreenState extends State<MeetingRoomsScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
-    final dividerColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
     
+    // 통합된 SystemUiOverlayStyle
+    final systemUiOverlayStyle = isDarkMode
+        ? SystemUiOverlayStyle.light.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          )
+        : SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          );
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: isDarkMode
-          ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
-          : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      value: systemUiOverlayStyle,
       child: Scaffold(
         backgroundColor: backgroundColor,
-        appBar: AppBar(
+        appBar: widget.hideAppBar ? null : AppBar(
           title: Text(
             '회의실',
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: textColor,
               fontSize: 16,
+              color: textColor,
             ),
           ),
           backgroundColor: backgroundColor,
           elevation: 0,
-          systemOverlayStyle: isDarkMode
-              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
-              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1),
             child: Divider(
               height: 1,
-              color: dividerColor,
+              color: CarbonColors.gray80,
             ),
           ),
           actions: [
@@ -229,24 +240,30 @@ class _MeetingRoomsScreenState extends State<MeetingRoomsScreen> {
             ),
           ],
         ),
-        body: Column(
-          children: [
-            // Search and filter bar
-            _buildSearchBar(),
-            
-            // Room list
-            Expanded(
-              child: _filteredRooms.isEmpty
-                  ? _buildEmptyState()
-                  : ListView.builder(
-                      itemCount: _filteredRooms.length,
-                      itemBuilder: (context, index) {
-                        final room = _filteredRooms[index];
-                        return _buildRoomCard(room);
-                      },
-                    ),
-            ),
-          ],
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (scrollNotification) {
+            // 스크롤 중에도 상태표시줄 스타일 유지
+            SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+            return false;
+          },
+          child: Column(
+            children: [
+              _buildSearchBar(),
+              Expanded(
+                child: _isLoading
+                    ? Center(child: CircularProgressIndicator(color: CarbonColors.blue60))
+                    : _filteredRooms.isEmpty
+                        ? _buildEmptyState()
+                        : ListView.builder(
+                            itemCount: _filteredRooms.length,
+                            itemBuilder: (context, index) {
+                              final room = _filteredRooms[index];
+                              return _buildRoomCard(room);
+                            },
+                          ),
+              ),
+            ],
+          ),
         ),
       ),
     );

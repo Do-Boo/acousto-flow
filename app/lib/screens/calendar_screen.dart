@@ -4,8 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import '../utils/carbon_colors.dart';
+import '../screens/meeting_reports_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
+  final bool hideAppBar;
+  
+  CalendarScreen({Key? key, this.hideAppBar = false}) : super(key: key);
+
   @override
   _CalendarScreenState createState() => _CalendarScreenState();
 }
@@ -114,13 +119,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
     final dividerColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
     
+    // 통합된 SystemUiOverlayStyle
+    final systemUiOverlayStyle = isDarkMode
+        ? SystemUiOverlayStyle.light.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
+          )
+        : SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          );
+    
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: isDarkMode
-          ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
-          : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      value: systemUiOverlayStyle,
       child: Scaffold(
         backgroundColor: backgroundColor,
-        appBar: AppBar(
+        // AppBar는 필요한 경우에만 표시
+        appBar: widget.hideAppBar ? null : AppBar(
           title: Text(
             '캘린더',
             style: TextStyle(
@@ -131,9 +148,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           backgroundColor: backgroundColor,
           elevation: 0,
-          systemOverlayStyle: isDarkMode
-              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
-              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+          systemOverlayStyle: systemUiOverlayStyle,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(1),
             child: Divider(
@@ -142,6 +157,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
           ),
           actions: [
+            IconButton(
+              icon: Icon(HugeIcons.strokeRoundedTask01, color: textColor),
+              tooltip: '회의실 예약 내역',
+              onPressed: () {
+                _showMeetingReports();
+              },
+            ),
             IconButton(
               icon: Icon(HugeIcons.strokeRoundedFilterHorizontal, color: textColor),
               onPressed: () {
@@ -167,7 +189,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
             Divider(height: 1, color: dividerColor),
             Expanded(
               flex: 5,
-              child: _buildEventsList(),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (scrollNotification) {
+                  // 스크롤 중에도 상태표시줄 스타일 유지
+                  SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+                  return false;
+                },
+                child: _buildEventsList(),
+              ),
             ),
           ],
         ),
@@ -332,6 +361,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 _selectedDate = date;
               });
             },
+            onDoubleTap: () {
+              // 더블 탭 시 해당 날짜의 회의실 예약 내역 화면으로 이동
+              setState(() {
+                _selectedDate = date;
+              });
+              _showMeetingReports();
+            },
             customBorder: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -415,104 +451,110 @@ class _CalendarScreenState extends State<CalendarScreen> {
       );
     }
     
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: eventsForSelectedDate.length,
-      separatorBuilder: (context, index) => Divider(
-        color: isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20,
-        height: 1,
-      ),
-      itemBuilder: (context, index) {
-        final event = eventsForSelectedDate[index];
-        return InkWell(
-          onTap: () {
-            // Show event details
-            _showEventDetails(event);
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 4,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: event.color,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: eventsForSelectedDate.length,
+            separatorBuilder: (context, index) => Divider(
+              color: isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20,
+              height: 1,
+            ),
+            itemBuilder: (context, index) {
+              final event = eventsForSelectedDate[index];
+              return InkWell(
+                onTap: () {
+                  // Show event details
+                  _showEventDetails(event);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: event.color.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              _getEventTypeText(event.type),
-                              style: TextStyle(
-                                color: event.color,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            event.time,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: secondaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        event.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: textColor,
+                      Container(
+                        width: 4,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: event.color,
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      if (event.location.isNotEmpty && event.location != '-')
-                        Row(
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.location_on_outlined,
-                              size: 14,
-                              color: secondaryColor,
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: event.color.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    _getEventTypeText(event.type),
+                                    style: TextStyle(
+                                      color: event.color,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  event.time,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: secondaryColor,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(height: 6),
                             Text(
-                              event.location,
+                              event.title,
                               style: TextStyle(
-                                fontSize: 12,
-                                color: secondaryColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: textColor,
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            if (event.location.isNotEmpty && event.location != '-')
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 14,
+                                    color: secondaryColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    event.location,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
+                      ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
-        );
-      },
+        ),
+      ],
     );
   }
 
@@ -858,6 +900,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
       default:
         return '';
     }
+  }
+
+  // 회의실 예약 내역 화면으로 이동하는 함수 추가
+  void _showMeetingReports() {
+    Get.to(
+      () => MeetingReportsScreen(initialDate: _selectedDate),
+      transition: Transition.rightToLeft,
+    );
   }
 }
 

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나의 주간 시간표</title>
+    <style>
+        /* IBM Plex Sans 폰트 적용 */
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+        
+        :root {
+            /* IBM Design Language 색상 팔레트 */
+            --ibm-blue: #0f62fe;
+            --ibm-cyan: #1192e8;
+            --ibm-teal: #005d5d;
+            --ibm-green: #42be65;
+            --ibm-purple: #8a3ffc;
+            --ibm-magenta: #ff7eb6;
+            --ibm-red: #fa4d56;
+            --ibm-orange: #ff832b;
+            --ibm-yellow: #f1c21b;
+            --ibm-gray-10: #f4f4f4;
+            --ibm-gray-20: #e0e0e0;
+            --ibm-gray-30: #c6c6c6;
+            --ibm-gray-60: #6f6f6f;
+            --ibm-gray-80: #393939;
+            --ibm-gray-100: #161616;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            background-color: var(--ibm-gray-10);
+            color: var(--ibm-gray-100);
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        
+        h1 {
+            font-weight: 500;
+            font-size: 28px;
+            color: var(--ibm-gray-100);
+            margin: 0 0 24px 0;
+            text-align: center;
+        }
+        
+        #timetable-container {
+            margin-bottom: 24px;
+        }
+        
+        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+            table-layout: fixed;
+        }
+        
+        .timetable th, .timetable td {
+            border: 1px solid var(--ibm-gray-20);
+            padding: 2px;
+            text-align: center;
+            vertical-align: middle;
+            height: 20px;
+            font-size: 12px;
+        }
+        
+        .timetable th {
+            background-color: var(--ibm-gray-10);
+            font-weight: 500;
+            color: var(--ibm-gray-80);
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        .timetable .time-header {
+            width: 60px;
+            min-width: 60px;
+            background-color: var(--ibm-gray-10);
+            font-weight: 500;
+            color: var(--ibm-gray-80);
+            font-size: 12px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+        }
+        
+        .wakeup {
+            background-color: var(--ibm-yellow);
+            color: var(--ibm-gray-100);
+        }
+        
+        .sleep {
+            background-color: var(--ibm-gray-60);
+            color: white;
+        }
+        
+        .swim {
+            background-color: var(--ibm-cyan);
+            color: white;
+        }
+        
+        .work {
+            background-color: var(--ibm-blue);
+            color: white;
+        }
+        
+        .university {
+            background-color: var(--ibm-purple);
+            color: white;
+        }
+        
+        .gym {
+            background-color: var(--ibm-red);
+            color: white;
+        }
+        
+        .study {
+            background-color: var(--ibm-green);
+            color: white;
+        }
+        
+        .cell-content {
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .btn-download {
+            background-color: var(--ibm-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 16px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-download:hover {
+            background-color: #0353e9;
+        }
+        
+        .btn-download:active {
+            background-color: #0043ce;
+        }
+        
+        .btn-download svg {
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .timetable th, .timetable td {
+                padding: 1px;
+                font-size: 10px;
+            }
+            
+            .cell-content {
+                font-size: 9px;
+            }
+            
+            .time-header {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>나의 주간 시간표</h1>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color wakeup"></div>
+                <span>기상</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color swim"></div>
+                <span>수영</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color work"></div>
+                <span>회사</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color university"></div>
+                <span>대학교</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color gym"></div>
+                <span>헬스</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color study"></div>
+                <span>공부</span>
+            </div>
+        </div>
+        
+        <div id="timetable-container">
+            <table class="timetable" id="weekly-timetable">
+                <thead>
+                    <tr>
+                        <th class="time-header">시간</th>
+                        <th>월</th>
+                        <th>화</th>
+                        <th>수</th>
+                        <th>목</th>
+                        <th>금</th>
+                        <th>토</th>
+                        <th>일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 04:00 ~ 04:30 -->
+                    <tr>
+                        <td class="time-header" rowspan="2">04:00-05:00</td>
+                        <td class="wakeup" rowspan="2"><div class="cell-content">04:30 기상</div></td>
+                        <td class="wakeup" rowspan="2"><div class="cell-content">04:30 기상</div></td>
+                        <td class="wakeup" rowspan="2"><div class="cell-content">04:30 기상</div></td>
+                        <td class="wakeup" rowspan="2"><div class="cell-content">04:30 기상</div></td>
+                        <td class="wakeup" rowspan="2"><div class="cell-content">04:30 기상</div></td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                    </tr>
+                    <tr></tr>
+                    
+                    <!-- 05:00 ~ 06:00 -->
+                    <tr>
+                        <td class="time-header" rowspan="2">05:00-06:00</td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                        <td rowspan="2"></td>
+                    </tr>
+                    <tr></tr>
+                    
+                    <!-- 06:00 ~ 07:30 -->
+                    <tr>
+                        <td class="time-header" rowspan="3">06:00-07:30</td>
+                        <td class="swim" rowspan="3"><div class="cell-content">수영</div></td>
+                        <td class="swim" rowspan="3"><div class="cell-content">수영</div></td>
+                        <td class="swim" rowspan="3"><div class="cell-content">수영</div></td>
+                        <td class="swim" rowspan="3"><div class="cell-content">수영</div></td>
+                        <td class="swim" rowspan="3"><div class="cell-content">수영</div></td>
+                        <td rowspan="3"></td>
+                        <td rowspan="3"></td>
+                    </tr>
+                    <tr></tr>
+                    <tr></tr>
+                    
+                    <!-- 07:30 ~ 08:00 -->
+                    <tr>
+                        <td class="time-header">07:30-08:00</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    
+                    <!-- 08:00 ~ 09:00 -->
+                    <tr>
+                        <td class="time-header" rowspan="2">08:00-09:00</td>
+                        <td class="work" rowspan="25"><div class="cell-content">회사</div></td>
+                        <td class="work" rowspan="19"><div class="cell-content">회사</div></td>
+                        <td class="work" rowspan="19"><div class="cell-content">회사</div></td>
+                        <td class="work" rowspan="19"><div class="cell-content">회사</div></td>
+                        <td class="work" rowspan="25"><div class="cell-content">회사</div></td>
+                        <td class="wakeup"><div class="cell-content">08:00 기상</div></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    
+                    <!-- 09:00 ~ 12:00 -->
+                    <tr>
+                        <td class="time-header" rowspan="6">09:00-12:00</td>
+                        <td class="university" rowspan="6"><div class="cell-content">대학교</div></td>
+                        <td></td>
+                    </tr>
+                    <tr><td></td></tr>
+                    <tr><td></td></tr>
+                    <tr><td></td></tr>
+                    <tr><td></td></tr>
+                    <tr><td></td></tr>
+                    
+                    <!-- 12:00 ~ 17:30 -->
+                    <tr>
+                        <td class="time-header" rowspan="11">12:00-17:30</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    
+                    <!-- 17:30 ~ 18:15 -->
+                    <tr>
+                        <td class="time-header">17:30-18:15</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    
+                    <!-- 18:15 ~ 20:00 -->
+                    <tr>
+                        <td class="time-header" rowspan="4">18:15-20:00</td>
+                        <td class="university" rowspan="4"><div class="cell-content">대학교</div></td>
+                        <td class="university" rowspan="4"><div class="cell-content">대학교</div></td>
+                        <td class="university" rowspan="4"><div class="cell-content">대학교</div></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    
+                    <!-- 20:00 ~ 20:30 -->
+                    <tr>
+                        <td class="time-header">20:00-20:30</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    
+                    <!-- 20:30 ~ 22:00 -->
+                    <tr>
+                        <td class="time-header" rowspan="3">20:30-22:00</td>
+                        <td class="gym" rowspan="3"><div class="cell-content">헬스</div></td>
+                        <td class="gym" rowspan="3"><div class="cell-content">헬스</div></td>
+                        <td class="gym" rowspan="3"><div class="cell-content">헬스</div></td>
+                        <td class="gym" rowspan="3"><div class="cell-content">헬스</div></td>
+                        <td class="gym" rowspan="3"><div class="cell-content">헬스</div></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    
+                    <!-- 22:00 ~ 00:00 -->
+                    <tr>
+                        <td class="time-header" rowspan="4">22:00-00:00</td>
+                        <td class="study" rowspan="4"><div class="cell-content">공부</div></td>
+                        <td class="study" rowspan="4"><div class="cell-content">공부</div></td>
+                        <td class="study" rowspan="4"><div class="cell-content">공부</div></td>
+                        <td class="study" rowspan="4"><div class="cell-content">공부</div></td>
+                        <td class="study" rowspan="4"><div class="cell-content">공부</div></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                    <tr><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="btn-container">
+            <button id="download-btn" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 32 32" fill="currentColor">
+                    <path d="M26,24v4H6V24H4v4H4a2,2,0,0,0,2,2H26a2,2,0,0,0,2-2h0V24Z"/>
+                    <polygon points="26 14 24.59 12.59 17 20.17 17 2 15 2 15 20.17 7.41 12.59 6 14 16 24 26 14"/>
+                </svg>
+                시간표 이미지로 저장하기
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('download-btn').addEventListener('click', function() {
+            // html2canvas 라이브러리 동적 로드
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = function() {
+                // 라이브러리 로드 완료 후 캡처 실행
+                html2canvas(document.getElementById('weekly-timetable')).then(function(canvas) {
+                    // 이미지 다운로드
+                    const link = document.createElement('a');
+                    link.download = '나의_시간표.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            };
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>

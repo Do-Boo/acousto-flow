@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주식 투자 수익 트래커</title>
+  
+  <style>
+    :root {
+      /* 색상 변수 - AcoustoFlow 스타일 다크 모드 */
+      --background: #000000;
+      --ui-background: #121212;
+      --ui-01: #1e1e1e;
+      --ui-02: #262626;
+      --ui-03: #333333;
+      --ui-04: #555555;
+      --text-01: #ffffff;
+      --text-02: #ececec;
+      --text-03: #8e8e8e;
+      --text-04: #737373;
+      --accent: #0095f6;
+      --accent-hover: #1877f2;
+      --border: #333333;
+      --support-01: #ed4956; /* 빨강 - 손실 */
+      --support-02: #70c050; /* 초록 - 이익 */
+      --support-03: #ffcc00; /* 노랑 - 주의/경고 */
+      --support-04: #0095f6; /* 파랑 - 정보/액션 */
+      
+      /* 스페이싱 */
+      --spacing-01: 0.25rem;
+      --spacing-02: 0.5rem;
+      --spacing-03: 0.75rem;
+      --spacing-04: 1rem;
+      --spacing-05: 1.5rem;
+      --spacing-06: 2rem;
+      
+      /* 테두리 반경 */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--background);
+      color: var(--text-01);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    header {
+      margin-bottom: var(--spacing-06);
+      padding-bottom: var(--spacing-04);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: var(--spacing-02);
+    }
+    
+    h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: var(--spacing-05) 0 var(--spacing-03);
+      padding-bottom: var(--spacing-02);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: var(--spacing-04) 0 var(--spacing-02);
+    }
+    
+    p {
+      margin-bottom: var(--spacing-03);
+      font-size: 14px;
+    }
+    
+    .card {
+      background-color: var(--ui-background);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin-bottom: var(--spacing-04);
+    }
+    
+    .card-header {
+      padding: var(--spacing-03) var(--spacing-04);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+    }
+    
+    .card-content {
+      padding: var(--spacing-04);
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--spacing-04);
+    }
+    
+    .tab {
+      padding: var(--spacing-03) var(--spacing-04);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-03);
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .tab.active {
+      color: var(--text-01);
+    }
+    
+    .tab.active:after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--text-01);
+    }
+    
+    .input-group {
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .input-row {
+      display: flex;
+      gap: var(--spacing-04);
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .input-column {
+      flex: 1;
+    }
+    
+    .input-label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: var(--spacing-02);
+      color: var(--text-02);
+    }
+    
+    .input {
+      width: 100%;
+      background-color: var(--ui-01);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text-01);
+      transition: border-color 0.2s;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    select.input {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%238e8e8e'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 20px;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-01);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background-color: var(--ui-01);
+    }
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .table th,
+    .table td {
+      padding: var(--spacing-03);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .table th {
+      font-weight: 600;
+      color: var(--text-02);
+      font-size: 13px;
+    }
+    
+    .table td {
+      font-size: 14px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .badge-profit {
+      background-color: rgba(112, 192, 80, 0.1);
+      color: var(--support-02);
+    }
+    
+    .badge-loss {
+      background-color: rgba(237, 73, 86, 0.1);
+      color: var(--support-01);
+    }
+    
+    .profit {
+      color: var(--support-02);
+    }
+    
+    .loss {
+      color: var(--support-01);
+    }
+    
+    .investor-selector {
+      display: flex;
+      margin-bottom: var(--spacing-04);
+      background-color: var(--ui-01);
+      border-radius: var(--radius-full);
+      padding: 3px;
+    }
+    
+    .investor-option {
+      flex: 1;
+      text-align: center;
+      padding: var(--spacing-02) var(--spacing-03);
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .investor-option.active {
+      background-color: var(--accent);
+      color: white;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--spacing-04);
+      margin-bottom: var(--spacing-04);
+    }
+    
+    .summary-item {
+      background-color: var(--ui-01);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-03);
+    }
+    
+    .summary-label {
+      font-size: 13px;
+      color: var(--text-03);
+      margin-bottom: var(--spacing-01);
+    }
+    
+    .summary-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .chart-container {
+      height: 300px;
+      margin-top: var(--spacing-04);
+      margin-bottom: var(--spacing-04);
+      background-color: var(--ui-01);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      overflow: auto;
+    }
+    
+    .modal-content {
+      background-color: var(--ui-background);
+      margin: 5% auto;
+      padding: var(--spacing-04);
+      border-radius: var(--radius-md);
+      width: 90%;
+      max-width: 800px;
+      animation: modalFadeIn 0.3s;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-04);
+      padding-bottom: var(--spacing-03);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      color: var(--text-01);
+      font-size: 24px;
+      cursor: pointer;
+    }
+    
+    @keyframes modalFadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    
+    /* 상세 거래 내역 스타일 */
+    .transaction {
+      background-color: var(--ui-01);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-03);
+      margin-bottom: var(--spacing-03);
+    }
+    
+    .transaction-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: var(--spacing-02);
+    }
+    
+    .transaction-date {
+      font-size: 13px;
+      color: var(--text-03);
+    }
+    
+    .transaction-actions {
+      display: flex;
+      gap: var(--spacing-02);
+    }
+    
+    .transaction-detail {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin-bottom: var(--spacing-01);
+    }
+    
+    .transaction-owner {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      margin-right: var(--spacing-02);
+    }
+    
+    .owner-me {
+      background-color: rgba(0, 149, 246, 0.1);
+      color: var(--accent);
+    }
+    
+    .owner-friend {
+      background-color: rgba(112, 192, 80, 0.1);
+      color: var(--support-02);
+    }
+    
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--ui-02);
+    }
+    
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-03);
+      margin-top: var(--spacing-04);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      margin-right: var(--spacing-02);
+    }
+    
+    /* 반응형 스타일 */
+    @media (max-width: 768px) {
+      .input-row {
+        flex-direction: column;
+        gap: var(--spacing-03);
+      }
+      
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .table-responsive {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>주식 투자 수익 트래커</h1>
+      <p>공동 계좌 투자의 개인별 수익을 확인하세요. 소수점 거래와 각자 다른 시점의 매수 내역을 관리할 수 있습니다.</p>
+    </header>
+    
+    <!-- 요약 정보 섹션 -->
+    <section class="card">
+      <div class="card-header">
+        <h3 class="card-title">요약 정보</h3>
+      </div>
+      <div class="card-content">
+        <div class="investor-selector">
+          <div class="investor-option active" data-investor="total">전체</div>
+          <div class="investor-option" data-investor="user1">내 수익</div>
+          <div class="investor-option" data-investor="user2">친구 수익</div>
+        </div>
+        
+        <div class="summary-grid" id="summary-total">
+          <div class="summary-item">
+            <div class="summary-label">총 투자 금액</div>
+            <div class="summary-value">₩0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">현재 평가 금액</div>
+            <div class="summary-value">₩0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">총 수익률</div>
+            <div class="summary-value">0.0%</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">총 수익금</div>
+            <div class="summary-value">₩0</div>
+          </div>
+        </div>
+        
+        <div class="summary-grid" id="summary-user1" style="display: none;">
+          <div class="summary-item">
+            <div class="summary-label">내 투자 금액</div>
+            <div class="summary-value">₩0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">현재 평가 금액</div>
+            <div class="summary-value">₩0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">내 수익률</div>
+            <div class="summary-value">0.0%</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">내 수익금</div>
+            <div class="summary-value">₩0</div>
+          </div>
+        </div>
+        
+        <div class="summary-grid" id="summary-user2" style="display: none;">
+          <div class="summary-item">
+            <div class="summary-label">친구 투자 금액</div>
+            <div class="summary-value">₩0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">현재 평가 금액</div>
+            <div class="summary-value">₩0</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">친구 수익률</div>
+            <div class="summary-value">0.0%</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">친구 수익금</div>
+            <div class="summary-value">₩0</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 주식 목록 및 수익 -->
+    <section class="card">
+      <div class="card-header">
+        <h3 class="card-title">주식 포트폴리오</h3>
+      </div>
+      <div class="card-content">
+        <div class="tabs">
+          <div class="tab active" data-tab="all">전체 보기</div>
+          <div class="tab" data-tab="user1">내 주식</div>
+          <div class="tab" data-tab="user2">친구 주식</div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table" id="stock-table">
+            <thead>
+              <tr>
+                <th>종목명</th>
+                <th>코드</th>
+                <th>현재가</th>
+                <th>총 보유수량</th>
+                <th>평균단가</th>
+                <th>평가금액</th>
+                <th>수익률</th>
+                <th>수익금</th>
+                <th>관리</th>
+              </tr>
+            </thead>
+            <tbody id="stock-list">
+              <!-- 자바스크립트로 동적 생성 -->
+            </tbody>
+          </table>
+        </div>
+        
+        <div style="margin-top: var(--spacing-04);">
+          <button class="btn btn-primary" id="add-stock-btn">새 종목 추가</button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 투자 비중 차트 -->
+    <section class="card">
+      <div class="card-header">
+        <h3 class="card-title">투자 비중</h3>
+      </div>
+      <div class="card-content">
+        <div class="investor-selector">
+          <div class="investor-option active" data-chart="total">전체 비중</div>
+          <div class="investor-option" data-chart="user1">내 비중</div>
+          <div class="investor-option" data-chart="user2">친구 비중</div>
+        </div>
+        
+        <div class="chart-container" id="chart-container">
+          <canvas id="pie-chart"></canvas>
+        </div>
+        
+        <div class="legend" id="chart-legend">
+          <!-- 자바스크립트로 동적 생성 -->
+        </div>
+      </div>
+    </section>
+  </div>
+  
+  <!-- 주식 추가 모달 -->
+  <div class="modal" id="add-stock-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">새 종목 추가</h3>
+        <button class="close-modal" id="close-stock-modal">&times;</button>
+      </div>
+      <form id="stock-form">
+        <div class="input-row">
+          <div class="input-column">
+            <label class="input-label">종목명</label>
+            <input type="text" class="input" id="stock-name" placeholder="예: 삼성전자" required>
+          </div>
+          <div class="input-column">
+            <label class="input-label">종목 코드</label>
+            <input type="text" class="input" id="stock-code" placeholder="예: 005930" required>
+          </div>
+          <div class="input-column">
+            <label class="input-label">현재가</label>
+            <input type="number" class="input" id="current-price" placeholder="주당 현재가" required step="0.01">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">종목 추가하기</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- 거래내역 모달 -->
+  <div class="modal" id="transactions-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="transactions-title">거래 내역</h3>
+        <button class="close-modal" id="close-transactions-modal">&times;</button>
+      </div>
+      
+      <div class="tabs">
+        <div class="tab active" data-txn-tab="all">전체 거래</div>
+        <div class="tab" data-txn-tab="user1">내 거래</div>
+        <div class="tab" data-txn-tab="user2">친구 거래</div>
+      </div>
+      
+      <div id="transactions-list">
+        <!-- 거래내역 동적 생성 -->
+      </div>
+      
+      <h3 style="margin-top: var(--spacing-05);">새 거래 추가</h3>
+      <form id="transaction-form">
+        <input type="hidden" id="transaction-stock-id">
+        <div class="input-row">
+          <div class="input-column">
+            <label class="input-label">매수일</label>
+            <input type="date" class="input" id="purchase-date" required>
+          </div>
+          <div class="input-column">
+            <label class="input-label">매수가</label>
+            <input type="number" class="input" id="purchase-price" placeholder="주당 매수가" required step="0.01">
+          </div>
+          <div class="input-column">
+            <label class="input-label">보유 수량</label>
+            <input type="number" class="input" id="quantity" placeholder="보유 주식 수" required step="0.000001">
+          </div>
+        </div>
+        
+        <div class="input-row">
+          <div class="input-column">
+            <label class="input-label">소유자</label>
+            <select class="input" id="owner">
+              <option value="user1">나</option>
+              <option value="user2">친구</option>
+            </select>
+          </div>
+          <div class="input-column">
+            <label class="input-label">메모</label>
+            <input type="text" class="input" id="transaction-memo" placeholder="거래 관련 메모 (선택사항)">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">거래 추가하기</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- 단일 거래 수정 모달 -->
+  <div class="modal" id="edit-transaction-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">거래 수정</h3>
+        <button class="close-modal" id="close-edit-modal">&times;</button>
+      </div>
+      <form id="edit-transaction-form">
+        <input type="hidden" id="edit-transaction-id">
+        <input type="hidden" id="edit-stock-id">
+        
+        <div class="input-row">
+          <div class="input-column">
+            <label class="input-label">매수일</label>
+            <input type="date" class="input" id="edit-purchase-date" required>
+          </div>
+          <div class="input-column">
+            <label class="input-label">매수가</label>
+            <input type="number" class="input" id="edit-purchase-price" placeholder="주당 매수가" required step="0.01">
+          </div>
+          <div class="input-column">
+            <label class="input-label">보유 수량</label>
+            <input type="number" class="input" id="edit-quantity" placeholder="보유 주식 수" required step="0.000001">
+          </div>
+        </div>
+        
+        <div class="input-row">
+          <div class="input-column">
+            <label class="input-label">소유자</label>
+            <select class="input" id="edit-owner">
+              <option value="user1">나</option>
+              <option value="user2">친구</option>
+            </select>
+          </div>
+          <div class="input-column">
+            <label class="input-label">메모</label>
+            <input type="text" class="input" id="edit-transaction-memo" placeholder="거래 관련 메모 (선택사항)">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">거래 수정하기</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script>
+    // 주식 및 거래 데이터를 저장할 객체
+    let stocks = [];
+    let transactions = [];
+    let currentView = 'all'; // all, user1, user2
+    let currentInvestor = 'total'; // total, user1, user2
+    let currentChart = 'total'; // total, user1, user2
+    let currentTxnTab = 'all'; // all, user1, user2
+    let pieChart = null;
+
+    // DOM 요소
+    const stockForm = document.getElementById('stock-form');
+    const transactionForm = document.getElementById('transaction-form');
+    const editTransactionForm = document.getElementById('edit-transaction-form');
+    const stockList = document.getElementById('stock-list');
+    const transactionsList = document.getElementById('transactions-list');
+    
+    // 모달 요소
+    const addStockModal = document.getElementById('add-stock-modal');
+    const transactionsModal = document.getElementById('transactions-modal');
+    const editTransactionModal = document.getElementById('edit-transaction-modal');
+    
+    // 버튼 이벤트
+    document.getElementById('add-stock-btn').addEventListener('click', openAddStockModal);
+    document.getElementById('close-stock-modal').addEventListener('click', closeAddStockModal);
+    document.getElementById('close-transactions-modal').addEventListener('click', closeTransactionsModal);
+    document.getElementById('close-edit-modal').addEventListener('click', closeEditTransactionModal);
+    
+    // 주식 추가 이벤트 리스너
+    stockForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const stockName = document.getElementById('stock-name').value;
+      const stockCode = document.getElementById('stock-code').value;
+      const currentPrice = parseFloat(document.getElementById('current-price').value);
+      
+      // 간단한 유효성 검사
+      if (!stockName || !stockCode || isNaN(currentPrice)) {
+        alert('모든 필드를 올바르게 입력해주세요.');
+        return;
+      }
+      
+      // 주식 코드 중복 확인
+      if (stocks.some(stock => stock.code === stockCode)) {
+        alert('이미 존재하는 종목 코드입니다.');
+        return;
+      }
+      
+      // 주식 객체 생성
+      const stock = {
+        id: Date.now(), // 고유 ID
+        name: stockName,
+        code: stockCode,
+        currentPrice: currentPrice
+      };
+      
+      // 배열에 추가
+      stocks.push(stock);
+      
+      // 로컬 스토리지에 저장
+      saveStocks();
+      
+      // 폼 초기화
+      stockForm.reset();
+      
+      // 모달 닫기
+      closeAddStockModal();
+      
+      // 화면 업데이트
+      updateStockList();
+      updateSummary();
+      updateChart();
+      
+      // 바로 거래 추가 모달 열기
+      openTransactionsModal(stock.id);
+    });
+    
+    // 거래 추가 이벤트 리스너
+    transactionForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const stockId = parseInt(document.getElementById('transaction-stock-id').value);
+      const purchaseDate = document.getElementById('purchase-date').value;
+      const purchasePrice = parseFloat(document.getElementById('purchase-price').value);
+      const quantity = parseFloat(document.getElementById('quantity').value);
+      const owner = document.getElementById('owner').value;
+      const memo = document.getElementById('transaction-memo').value;
+      
+      // 간단한 유효성 검사
+      if (!purchaseDate || isNaN(purchasePrice) || isNaN(quantity) || quantity <= 0) {
+        alert('모든 필드를 올바르게 입력해주세요.');
+        return;
+      }
+      
+      // 거래 객체 생성
+      const transaction = {
+        id: Date.now(), // 고유 ID
+        stockId: stockId,
+        purchaseDate: purchaseDate,
+        purchasePrice: purchasePrice,
+        quantity: quantity,
+        owner: owner,
+        memo: memo
+      };
+      
+      // 배열에 추가
+      transactions.push(transaction);
+      
+      // 로컬 스토리지에 저장
+      saveTransactions();
+      
+      // 폼 초기화
+      transactionForm.reset();
+      document.getElementById('purchase-date').valueAsDate = new Date();
+      
+      // 거래 목록 업데이트
+      updateTransactionsList(stockId);
+      
+      // 주식 목록 및 요약 업데이트
+      updateStockList();
+      updateSummary();
+      updateChart();
+    });
+    
+    // 거래 수정 이벤트 리스너
+    editTransactionForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const transactionId = parseInt(document.getElementById('edit-transaction-id').value);
+      const stockId = parseInt(document.getElementById('edit-stock-id').value);
+      const purchaseDate = document.getElementById('edit-purchase-date').value;
+      const purchasePrice = parseFloat(document.getElementById('edit-purchase-price').value);
+      const quantity = parseFloat(document.getElementById('edit-quantity').value);
+      const owner = document.getElementById('edit-owner').value;
+      const memo = document.getElementById('edit-transaction-memo').value;
+      
+      // 간단한 유효성 검사
+      if (!purchaseDate || isNaN(purchasePrice) || isNaN(quantity) || quantity <= 0) {
+        alert('모든 필드를 올바르게 입력해주세요.');
+        return;
+      }
+      
+      // 해당 거래 찾기 및 업데이트
+      const index = transactions.findIndex(t => t.id === transactionId);
+      if (index !== -1) {
+        transactions[index] = {
+          id: transactionId,
+          stockId: stockId,
+          purchaseDate: purchaseDate,
+          purchasePrice: purchasePrice,
+          quantity: quantity,
+          owner: owner,
+          memo: memo
+        };
+        
+        // 로컬 스토리지에 저장
+        saveTransactions();
+        
+        // 모달 닫기
+        closeEditTransactionModal();
+        
+        // 거래 목록 업데이트
+        updateTransactionsList(stockId);
+        
+        // 주식 목록 및 요약 업데이트
+        updateStockList();
+        updateSummary();
+        updateChart();
+      }
+    });
+    
+    // 주식 목록 업데이트
+    function updateStockList() {
+      stockList.innerHTML = '';
+      
+      const filteredStocks = filterStocks();
+      
+      if (filteredStocks.length === 0) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = `<td colspan="9" style="text-align: center;">등록된 주식이 없습니다.</td>`;
+        stockList.appendChild(emptyRow);
+        return;
+      }
+      
+      filteredStocks.forEach(stock => {
+        // 이 주식의 모든 거래내역 가져오기
+        const stockTransactions = getStockTransactions(stock.id);
+        
+        // 투자자별 요약 정보 계산
+        const summary = calculateStockSummary(stock, stockTransactions);
+        
+        // 현재 보기 모드에 따라 데이터 선택
+        let totalShares, totalInvestment, currentValue, profit, profitRate;
+        
+        if (currentView === 'user1') {
+          totalShares = summary.user1.totalShares;
+          totalInvestment = summary.user1.totalInvestment;
+          currentValue = summary.user1.currentValue;
+          profit = summary.user1.profit;
+          profitRate = summary.user1.profitRate;
+        } else if (currentView === 'user2') {
+          totalShares = summary.user2.totalShares;
+          totalInvestment = summary.user2.totalInvestment;
+          currentValue = summary.user2.currentValue;
+          profit = summary.user2.profit;
+          profitRate = summary.user2.profitRate;
+        } else {
+          totalShares = summary.total.totalShares;
+          totalInvestment = summary.total.totalInvestment;
+          currentValue = summary.total.currentValue;
+          profit = summary.total.profit;
+          profitRate = summary.total.profitRate;
+        }
+        
+        // 해당 투자자 모드에서 보유 주식이 없다면 표시하지 않음
+        if (totalShares === 0) return;
+        
+        const avgPrice = totalShares > 0 ? totalInvestment / totalShares : 0;
+        const isProfitable = profit >= 0;
+        const formattedProfit = (isProfitable ? '+' : '') + formatCurrency(profit);
+        const formattedRate = (isProfitable ? '+' : '') + profitRate.toFixed(2) + '%';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${stock.name}</td>
+          <td>${stock.code}</td>
+          <td>${formatCurrency(stock.currentPrice)}</td>
+          <td>${formatNumber(totalShares)}</td>
+          <td>${formatCurrency(avgPrice)}</td>
+          <td>${formatCurrency(currentValue)}</td>
+          <td class="${isProfitable ? 'profit' : 'loss'}">${formattedRate}</td>
+          <td class="${isProfitable ? 'profit' : 'loss'}">${formattedProfit}</td>
+          <td>
+            <button class="btn btn-secondary" onclick="openTransactionsModal(${stock.id})">거래내역</button>
+            <button class="btn btn-secondary" onclick="editStock(${stock.id})">수정</button>
+            <button class="btn btn-secondary" onclick="deleteStock(${stock.id})">삭제</button>
+          </td>
+        `;
+        
+        stockList.appendChild(row);
+      });
+    }
+    
+    // 주식 요약 정보 계산
+    function calculateStockSummary(stock, stockTransactions) {
+      const summary = {
+        total: { totalShares: 0, totalInvestment: 0, avgPrice: 0, currentValue: 0, profit: 0, profitRate: 0 },
+        user1: { totalShares: 0, totalInvestment: 0, avgPrice: 0, currentValue: 0, profit: 0, profitRate: 0 },
+        user2: { totalShares: 0, totalInvestment: 0, avgPrice: 0, currentValue: 0, profit: 0, profitRate: 0 }
+      };
+      
+      // 모든 거래내역 순회
+      stockTransactions.forEach(transaction => {
+        const investmentAmount = transaction.purchasePrice * transaction.quantity;
+        
+        // 전체 요약
+        summary.total.totalShares += transaction.quantity;
+        summary.total.totalInvestment += investmentAmount;
+        
+        // 소유자별 요약
+        if (transaction.owner === 'user1') {
+          summary.user1.totalShares += transaction.quantity;
+          summary.user1.totalInvestment += investmentAmount;
+        } else if (transaction.owner === 'user2') {
+          summary.user2.totalShares += transaction.quantity;
+          summary.user2.totalInvestment += investmentAmount;
+        }
+      });
+      
+      // 평균 단가, 현재 가치, 수익률 계산
+      ['total', 'user1', 'user2'].forEach(owner => {
+        if (summary[owner].totalShares > 0) {
+          summary[owner].avgPrice = summary[owner].totalInvestment / summary[owner].totalShares;
+          summary[owner].currentValue = summary[owner].totalShares * stock.currentPrice;
+          summary[owner].profit = summary[owner].currentValue - summary[owner].totalInvestment;
+          summary[owner].profitRate = summary[owner].totalInvestment > 0 ? 
+                                (summary[owner].profit / summary[owner].totalInvestment) * 100 : 0;
+        }
+      });
+      
+      return summary;
+    }
+    
+    // 특정 주식의 거래내역 가져오기
+    function getStockTransactions(stockId) {
+      return transactions.filter(t => t.stockId === stockId);
+    }
+    
+    // 모든 주식 데이터의 요약 정보 계산
+    function calculatePortfolioSummary() {
+      const summary = {
+        total: { investment: 0, currentValue: 0, profit: 0, profitRate: 0 },
+        user1: { investment: 0, currentValue: 0, profit: 0, profitRate: 0 },
+        user2: { investment: 0, currentValue: 0, profit: 0, profitRate: 0 }
+      };
+      
+      // 각 주식별로 요약 정보 계산 및 합산
+      stocks.forEach(stock => {
+        const stockTransactions = getStockTransactions(stock.id);
+        const stockSummary = calculateStockSummary(stock, stockTransactions);
+        
+        // 전체 합산
+        summary.total.investment += stockSummary.total.totalInvestment;
+        summary.total.currentValue += stockSummary.total.currentValue;
+        summary.total.profit += stockSummary.total.profit;
+        
+        // 내 투자 합산
+        summary.user1.investment += stockSummary.user1.totalInvestment;
+        summary.user1.currentValue += stockSummary.user1.currentValue;
+        summary.user1.profit += stockSummary.user1.profit;
+        
+        // 친구 투자 합산
+        summary.user2.investment += stockSummary.user2.totalInvestment;
+        summary.user2.currentValue += stockSummary.user2.currentValue;
+        summary.user2.profit += stockSummary.user2.profit;
+      });
+      
+      // 수익률 계산
+      ['total', 'user1', 'user2'].forEach(owner => {
+        summary[owner].profitRate = summary[owner].investment > 0 ? 
+                            (summary[owner].profit / summary[owner].investment) * 100 : 0;
+      });
+      
+      return summary;
+    }
+    
+    // 요약 정보 업데이트
+    function updateSummary() {
+      // 포트폴리오 요약 정보 계산
+      const summary = calculatePortfolioSummary();
+      
+      // 각 요약 카드 업데이트
+      updateSummaryCard('total', summary.total);
+      updateSummaryCard('user1', summary.user1);
+      updateSummaryCard('user2', summary.user2);
+      
+      // 현재 선택된 투자자 카드만 표시
+      document.getElementById('summary-total').style.display = currentInvestor === 'total' ? 'grid' : 'none';
+      document.getElementById('summary-user1').style.display = currentInvestor === 'user1' ? 'grid' : 'none';
+      document.getElementById('summary-user2').style.display = currentInvestor === 'user2' ? 'grid' : 'none';
+    }
+    
+    // 요약 카드 업데이트
+    function updateSummaryCard(owner, data) {
+      const card = document.getElementById(`summary-${owner}`);
+      if (!card) return;
+      
+      const isProfitable = data.profit >= 0;
+      
+      // 카드 내용 업데이트
+      const items = card.querySelectorAll('.summary-item');
+      
+      // 투자 금액
+      items[0].querySelector('.summary-value').textContent = formatCurrency(data.investment);
+      
+      // 현재 평가 금액
+      items[1].querySelector('.summary-value').textContent = formatCurrency(data.currentValue);
+      
+      // 수익률
+      const profitRateElement = items[2].querySelector('.summary-value');
+      profitRateElement.textContent = `${isProfitable ? '+' : ''}${data.profitRate.toFixed(2)}%`;
+      profitRateElement.className = `summary-value ${isProfitable ? 'profit' : 'loss'}`;
+      
+      // 수익금
+      const profitElement = items[3].querySelector('.summary-value');
+      profitElement.textContent = `${isProfitable ? '+' : ''}${formatCurrency(data.profit)}`;
+      profitElement.className = `summary-value ${isProfitable ? 'profit' : 'loss'}`;
+    }
+    
+    // 주식 필터링 (전체/내 주식/친구 주식)
+    function filterStocks() {
+      if (currentView === 'all') {
+        return stocks;
+      } else if (currentView === 'user1') {
+        // 내가 보유한 주식만 필터링
+        return stocks.filter(stock => {
+          const stockTransactions = getStockTransactions(stock.id);
+          const ownedShares = stockTransactions
+            .filter(t => t.owner === 'user1')
+            .reduce((sum, t) => sum + t.quantity, 0);
+          return ownedShares > 0;
+        });
+      } else if (currentView === 'user2') {
+        // 친구가 보유한 주식만 필터링
+        return stocks.filter(stock => {
+          const stockTransactions = getStockTransactions(stock.id);
+          const ownedShares = stockTransactions
+            .filter(t => t.owner === 'user2')
+            .reduce((sum, t) => sum + t.quantity, 0);
+          return ownedShares > 0;
+        });
+      }
+      return stocks;
+    }
+    
+    // 거래 내역 필터링
+    function filterTransactions(stockId) {
+      const stockTransactions = getStockTransactions(stockId);
+      
+      if (currentTxnTab === 'all') {
+        return stockTransactions;
+      } else if (currentTxnTab === 'user1') {
+        return stockTransactions.filter(t => t.owner === 'user1');
+      } else if (currentTxnTab === 'user2') {
+        return stockTransactions.filter(t => t.owner === 'user2');
+      }
+      return stockTransactions;
+    }
+    
+    // 거래 내역 목록 업데이트
+    function updateTransactionsList(stockId) {
+      const stock = stocks.find(s => s.id === stockId);
+      if (!stock) return;
+      
+      // 모달 제목 업데이트
+      document.getElementById('transactions-title').textContent = `${stock.name} (${stock.code}) 거래 내역`;
+      
+      // 거래내역 필터링
+      const filteredTransactions = filterTransactions(stockId);
+      
+      // 거래내역 목록 비우기
+      transactionsList.innerHTML = '';
+      
+      // 거래내역이 없을 경우
+      if (filteredTransactions.length === 0) {
+        transactionsList.innerHTML = `<p style="text-align: center; color: var(--text-03); margin: var(--spacing-04) 0;">등록된 거래 내역이 없습니다.</p>`;
+        return;
+      }
+      
+      // 거래내역 정렬 (최근 것이 상단에)
+      const sortedTransactions = [...filteredTransactions].sort((a, b) => 
+        new Date(b.purchaseDate) - new Date(a.purchaseDate)
+      );
+      
+      // 거래내역 추가
+      sortedTransactions.forEach(transaction => {
+        const investmentAmount = transaction.purchasePrice * transaction.quantity;
+        const currentValue = stock.currentPrice * transaction.quantity;
+        const profit = currentValue - investmentAmount;
+        const profitRate = (profit / investmentAmount) * 100;
+        const isProfitable = profit >= 0;
+        
+        const dateObj = new Date(transaction.purchaseDate);
+        const formattedDate = dateObj.toLocaleDateString('ko-KR', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        
+        const transactionEl = document.createElement('div');
+        transactionEl.className = 'transaction';
+        
+        transactionEl.innerHTML = `
+          <div class="transaction-header">
+            <div>
+              <span class="transaction-owner ${transaction.owner === 'user1' ? 'owner-me' : 'owner-friend'}">
+                ${transaction.owner === 'user1' ? '나' : '친구'}
+              </span>
+              <span class="transaction-date">${formattedDate}</span>
+            </div>
+            <div class="transaction-actions">
+              <button class="btn-icon" onclick="editTransaction(${transaction.id})">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                </svg>
+              </button>
+              <button class="btn-icon" onclick="deleteTransaction(${transaction.id}, ${stockId})">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="transaction-detail">
+            <span>매수가</span>
+            <span>${formatCurrency(transaction.purchasePrice)}</span>
+          </div>
+          <div class="transaction-detail">
+            <span>수량</span>
+            <span>${formatNumber(transaction.quantity)}</span>
+          </div>
+          <div class="transaction-detail">
+            <span>투자금액</span>
+            <span>${formatCurrency(investmentAmount)}</span>
+          </div>
+          <div class="transaction-detail">
+            <span>현재가치</span>
+            <span>${formatCurrency(currentValue)}</span>
+          </div>
+          <div class="transaction-detail">
+            <span>수익률</span>
+            <span class="${isProfitable ? 'profit' : 'loss'}">
+              ${isProfitable ? '+' : ''}${profitRate.toFixed(2)}%
+            </span>
+          </div>
+          <div class="transaction-detail">
+            <span>수익금</span>
+            <span class="${isProfitable ? 'profit' : 'loss'}">
+              ${isProfitable ? '+' : ''}${formatCurrency(profit)}
+            </span>
+          </div>
+          ${transaction.memo ? `<div class="transaction-detail">
+            <span>메모</span>
+            <span>${transaction.memo}</span>
+          </div>` : ''}
+        `;
+        
+        transactionsList.appendChild(transactionEl);
+      });
+    }
+    
+    // 차트 업데이트
+    function updateChart() {
+      const ctx = document.getElementById('pie-chart').getContext('2d');
+      
+      // 차트 데이터 준비
+      let chartData = [];
+      let labels = [];
+      let backgroundColor = [];
+      
+      // 현재 차트 타입에 따라 데이터 준비
+      stocks.forEach(stock => {
+        const stockTransactions = getStockTransactions(stock.id);
+        const summary = calculateStockSummary(stock, stockTransactions);
+        
+        let investmentAmount = 0;
+        
+        if (currentChart === 'total') {
+          investmentAmount = summary.total.currentValue;
+        } else if (currentChart === 'user1') {
+          investmentAmount = summary.user1.currentValue;
+        } else if (currentChart === 'user2') {
+          investmentAmount = summary.user2.currentValue;
+        }
+        
+        // 투자 금액이 0보다 클 경우만 차트에 추가
+        if (investmentAmount > 0) {
+          chartData.push(investmentAmount);
+          labels.push(stock.name);
+          backgroundColor.push(getRandomColor());
+        }
+      });
+      
+      // 차트 범례 업데이트
+      updateChartLegend(labels, backgroundColor, chartData);
+      
+      // 기존 차트 제거
+      if (pieChart) {
+        pieChart.destroy();
+      }
+      
+      // 차트 생성
+      if (chartData.length > 0) {
+        pieChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: chartData,
+              backgroundColor: backgroundColor,
+              borderColor: 'rgba(0, 0, 0, 0.1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw;
+                    const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ${percentage}% (${formatCurrency(value)})`;
+                  }
+                }
+              }
+            }
+          }
+        });
+      } else {
+        // 데이터가 없는 경우 메시지 표시
+        document.getElementById('chart-container').innerHTML = '<div style="color: var(--text-03);">표시할 데이터가 없습니다.</div>';
+      }
+    }
+    
+    // 차트 범례 업데이트
+    function updateChartLegend(labels, colors, values) {
+      const legendContainer = document.getElementById('chart-legend');
+      legendContainer.innerHTML = '';
+      
+      const total = values.reduce((acc, val) => acc + val, 0);
+      
+      // 각 항목에 대한 범례 생성
+      labels.forEach((label, index) => {
+        const percentage = Math.round((values[index] / total) * 100);
+        const legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        
+        const colorBox = document.createElement('div');
+        colorBox.className = 'legend-color';
+        colorBox.style.backgroundColor = colors[index];
+        
+        const labelText = document.createElement('span');
+        labelText.textContent = `${label} (${percentage}%)`;
+        
+        legendItem.appendChild(colorBox);
+        legendItem.appendChild(labelText);
+        legendContainer.appendChild(legendItem);
+      });
+    }
+    
+    // 랜덤 색상 생성
+    function getRandomColor() {
+      const colors = [
+        '#4f5bd5', '#962fbf', '#d62976', '#fa7e1e', // 인스타그램 그라데이션
+        '#0095f6', '#70c050', '#ffcc00', '#ed4956', // 앱 서포트 컬러
+        '#3498db', '#2ecc71', '#f1c40f', '#e74c3c', // 밝은 색상
+        '#9b59b6', '#1abc9c', '#f39c12', '#d35400'  // 추가 색상
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+    
+    // 주식 수정 함수
+    function editStock(id) {
+      const stock = stocks.find(s => s.id === id);
+      if (!stock) return;
+      
+      // 간단한 프롬프트로 현재가 업데이트
+      const newPrice = prompt(`${stock.name}의 현재가를 입력하세요:`, stock.currentPrice);
+      
+      if (newPrice !== null && !isNaN(parseFloat(newPrice))) {
+        stock.currentPrice = parseFloat(newPrice);
+        saveStocks();
+        updateStockList();
+        updateSummary();
+        updateChart();
+        
+        // 열려있는 거래 모달 업데이트
+        if (document.getElementById('transactions-modal').style.display === 'block') {
+          updateTransactionsList(id);
+        }
+      }
+    }
+    
+    // 주식 삭제 함수
+    function deleteStock(id) {
+      if (confirm('이 종목과 관련된 모든 거래 내역이 삭제됩니다. 계속하시겠습니까?')) {
+        // 관련 거래 내역 먼저 삭제
+        transactions = transactions.filter(t => t.stockId !== id);
+        saveTransactions();
+        
+        // 주식 삭제
+        stocks = stocks.filter(s => s.id !== id);
+        saveStocks();
+        
+        updateStockList();
+        updateSummary();
+        updateChart();
+      }
+    }
+    
+    // 거래 수정 함수
+    function editTransaction(id) {
+      const transaction = transactions.find(t => t.id === id);
+      if (!transaction) return;
+      
+      // 폼에 데이터 채우기
+      document.getElementById('edit-transaction-id').value = transaction.id;
+      document.getElementById('edit-stock-id').value = transaction.stockId;
+      document.getElementById('edit-purchase-date').value = transaction.purchaseDate;
+      document.getElementById('edit-purchase-price').value = transaction.purchasePrice;
+      document.getElementById('edit-quantity').value = transaction.quantity;
+      document.getElementById('edit-owner').value = transaction.owner;
+      document.getElementById('edit-transaction-memo').value = transaction.memo || '';
+      
+      // 모달 열기
+      openEditTransactionModal();
+    }
+    
+    // 거래 삭제 함수
+    function deleteTransaction(id, stockId) {
+      if (confirm('이 거래 내역을 삭제하시겠습니까?')) {
+        transactions = transactions.filter(t => t.id !== id);
+        saveTransactions();
+        
+        updateTransactionsList(stockId);
+        updateStockList();
+        updateSummary();
+        updateChart();
+      }
+    }
+    
+    // 거래 내역 탭 변경 이벤트 설정
+    document.querySelectorAll('.tab[data-txn-tab]').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // 활성 탭 클래스 변경
+        document.querySelectorAll('.tab[data-txn-tab]').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 현재 탭 설정
+        currentTxnTab = this.dataset.txnTab;
+        
+        // 현재 열려있는 주식의 거래내역 업데이트
+        const stockId = parseInt(document.getElementById('transaction-stock-id').value);
+        updateTransactionsList(stockId);
+      });
+    });
+    
+    // 주식 보기 탭 변경 이벤트 설정
+    document.querySelectorAll('.tab[data-tab]').forEach(tab => {
+      tab.addEventListener('click', function() {
+        // 활성 탭 클래스 변경
+        document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 현재 뷰 업데이트
+        currentView = this.dataset.tab;
+        
+        // 목록 업데이트
+        updateStockList();
+      });
+    });
+    
+    // 투자자 선택 이벤트 설정
+    document.querySelectorAll('.investor-option[data-investor]').forEach(option => {
+      option.addEventListener('click', function() {
+        // 활성 옵션 클래스 변경
+        document.querySelectorAll('.investor-option[data-investor]').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 현재 투자자 업데이트
+        currentInvestor = this.dataset.investor;
+        
+        // 요약 섹션 업데이트
+        updateSummary();
+      });
+    });
+    
+    // 차트 유형 선택 이벤트 설정
+    document.querySelectorAll('.investor-option[data-chart]').forEach(option => {
+      option.addEventListener('click', function() {
+        // 활성 옵션 클래스 변경
+        document.querySelectorAll('.investor-option[data-chart]').forEach(o => o.classList.remove('active'));
+        this.classList.add('active');
+        
+        // 현재 차트 유형 업데이트
+        currentChart = this.dataset.chart;
+        
+        // 차트 업데이트
+        updateChart();
+      });
+    });
+  
+</script>
+</body>
+</html>

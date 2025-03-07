@@ -73,14 +73,6 @@ INSERT INTO equipment (room_id, name, description, equipment_model, manufacturer
 (13, '소형 프로젝터', '소회의실용 프로젝터', 'EPSON-EB-W05', 'EPSON', 90, 380, 1),
 (14, '빔프로젝터', '회의실용 프로젝터', 'EPSON-EB-2155W', 'EPSON', 200, 800, 1);
 
--- 식당 메뉴 추가 (가정: restaurant_menu 테이블 존재)
-INSERT INTO restaurant_menu (menu_date, meal_type, menu_items) VALUES
-(CURDATE(), 'lunch', '된장찌개, 제육볶음, 시금치나물, 김치, 흰쌀밥'),
-(CURDATE(), 'dinner', '미역국, 고등어구이, 애호박볶음, 깍두기, 흰쌀밥'),
-(DATE_ADD(CURDATE(), INTERVAL 1 DAY), 'lunch', '김치찌개, 소불고기, 콩나물무침, 총각김치, 흰쌀밥'),
-(DATE_ADD(CURDATE(), INTERVAL 1 DAY), 'dinner', '북어국, 닭갈비, 깻잎찜, 배추김치, 흰쌀밥'),
-(DATE_ADD(CURDATE(), INTERVAL 2 DAY), 'lunch', '쌀국수, 팟타이, 월남쌈, 피클, 망고 푸딩');
-
 -- 예약 데이터 추가 (가정: reservations 테이블 존재)
 INSERT INTO reservations (id, room_id, meeting_name, department, contact_person, contact_number, start_time, end_time, approval_status) VALUES
 ('1738887170753', 1, '세계소비자의날 기념행사', '공정경제과', '최은희', '02-2133-5372', '2025-03-14 09:00:00', '2025-03-14 12:00:00', '승인'),
@@ -96,15 +88,15 @@ INSERT INTO reports (reservation_id, meeting_room, usage_date, start_time, end_t
 ('1738887170756', '서소문청사 후생동 지상4층 강당', '2025-03-20', '09:00:00', '17:00:00', '인사과 직원 25명', '점심 시간 이후 에어컨 문제로 실내 온도 높았음');
 
 -- 보고서 사용 장비 데이터 추가 (가정: report_used_equipment 테이블 존재)
-INSERT INTO report_used_equipment (report_id, equipment_name, quantity, status) VALUES
-(1, '빔프로젝터', 1, '정상'),
-(1, '무선마이크 세트', 2, '간헐적 잡음'),
-(1, '음향시스템', 1, '정상'),
-(2, '스마트보드', 1, '터치 반응 느림'),
-(2, '태블릿', 3, '정상'),
-(3, '대형 빔프로젝터', 1, '정상'),
-(3, '무선마이크 세트', 4, '정상'),
-(3, '음향믹서', 1, '정상');
+INSERT INTO report_used_equipment (report_id, room_equipment_id, quantity) VALUES
+(1, 1, 1),
+(1, 2, 2),
+(1, 3, 1),
+(2, 1, 1),
+(2, 4, 3),
+(3, 2, 1),
+(3, 3, 4),
+(3, 5, 1);
 
 -- 회의 메모 데이터 추가 (가정: meeting_memo 테이블 존재)
 INSERT INTO meeting_memo (report_id, title, content, attachments) VALUES

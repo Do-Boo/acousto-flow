@@ -1,192 +1,127 @@
-```mermaid
 erDiagram
-    MEETING_ROOM {
+    meeting_rooms ||--o{ equipment : "has"
+    meeting_rooms ||--o{ reservations : "is_booked_for"
+    reservations ||--o{ reservations_memo : "has"
+    reservations ||--o{ reservations_used : "tracks"
+    equipment ||--o{ reservations_used : "is_used_in"
+    equipment ||--o{ equipment_maintenance : "undergoes"
+    reservations |o--o{ equipment_maintenance : "may_require"
+    equipment_maintenance ||--o{ maintenance_images : "includes"
+    equipment_maintenance ||--o{ maintenance_comments : "receives"
+    equipment_maintenance ||--o{ maintenance_likes : "gets"
+    users ||--o{ notifications : "receives"
+    users ||--o{ maintenance_comments : "writes"
+    users ||--o{ maintenance_likes : "gives"
+    
+    meeting_rooms {
         int id PK
-        string name
-        string building
-        int floor
-        string room_number
-        int capacity
-        string status
-        string features
-        datetime created_at
-        datetime updated_at
+        varchar building_name
+        varchar floor
+        varchar room_name
     }
     
-    EQUIPMENT_MASTER {
-        int id PK
-        string name
-        string type
-        string description
-        string model_number
-        string manufacturer
-        datetime purchase_date
-        string status
-        datetime created_at
-        datetime updated_at
-    }
-    
-    ROOM_EQUIPMENT {
+    equipment {
         int id PK
         int room_id FK
-        int equipment_id FK
+        varchar name
+        varchar equipment_model
+        varchar manufacturer
+        int filter_hours
+        int lamp_hours
         int quantity
-        string status
-        string location_in_room
-        datetime last_checked
-        string checked_by
-        string notes
-        datetime created_at
         datetime updated_at
     }
     
-    RESERVATION {
+    restaurant_menu {
         int id PK
+        date date
+        text menu
+    }
+    
+    reservations {
+        varchar id PK
         int room_id FK
-        int user_id FK
-        string meeting_name
-        text description
+        varchar meeting_name
+        varchar department
+        date meeting_date
         datetime start_time
         datetime end_time
-        string status
-        string attendees
-        datetime created_at
-        datetime updated_at
+        varchar contact_person
+        varchar contact_number
+        enum approval_status
     }
     
-    EQUIPMENT_TASK {
+    reservations_memo {
         int id PK
-        int equipment_id FK
-        string task_name
-        text description
-        int assigned_to FK
-        string assigner
-        datetime start_time
-        datetime end_time
-        string location
-        int department FK
-        string priority
-        string status
-        datetime created_at
-        datetime updated_at
-    }
-    
-    REPORT {
-        int id PK
-        int reservation_id FK
-        string meeting_room
-        date usage_date
-        time start_time
-        time end_time
-        string organizer
-        string attendees
-        string used_equipment
-        text notes
-        datetime created_at
-        datetime updated_at
-    }
-    
-    USER {
-        int id PK
-        string name
-        string email
-        string password
-        string department
-        string position
-        string phone
-        string status
-        datetime created_at
-        datetime updated_at
-    }
-    
-    DEPARTMENT {
-        int id PK
-        string name
-        string code
-        string location
-        string manager_id FK
-        datetime created_at
-        datetime updated_at
-    }
-    
-    MEETING_NOTE {
-        int id PK
-        int reservation_id FK
-        int user_id FK
-        string title
+        varchar reservation_id FK
         text content
-        string used_equipment
-        string attachments
-        datetime created_at
         datetime updated_at
     }
     
-    VACATION {
+    reservations_used {
         int id PK
-        int user_id FK
-        datetime start_date
-        datetime end_date
-        string type
-        string status
-        text reason
-        int approver_id FK
+        varchar reservation_id FK
+        int room_equipment_id FK
+        int quantity_used
+        enum action_type
+        text issues_found
+        text notes
+        varchar worked_by
         datetime created_at
-        datetime updated_at
     }
     
-    CONSTRUCTION_PROJECT {
-        int id PK
-        string name
-        string location
-        datetime start_date
-        datetime end_date
-        string status
-        string manager
-        text description
-        datetime created_at
-        datetime updated_at
-    }
-    
-    RESTAURANT_MENU {
-        int id PK
-        date menu_date
-        string meal_type
-        string menu_items
-        string nutritional_info
-        int calories
-        string special_note
-        datetime created_at
-        datetime updated_at
-    }
-    
-    EQUIPMENT_MAINTENANCE {
+    equipment_maintenance {
         int id PK
         int equipment_id FK
-        int room_equipment_id FK
-        datetime maintenance_date
-        string maintenance_type
-        string performed_by
-        text description
-        string result
-        string next_maintenance_date
+        varchar location_description
+        varchar reservation_id FK
+        enum action_type
+        datetime start_time
+        datetime end_time
+        text issues_found
+        text resolution
+        int filter_hours_updated
+        int lamp_hours_updated
+        varchar worked_by
         datetime created_at
-        datetime updated_at
     }
     
-    MEETING_ROOM ||--o{ RESERVATION : "has"
-    MEETING_ROOM ||--o{ ROOM_EQUIPMENT : "contains"
-    EQUIPMENT_MASTER ||--o{ ROOM_EQUIPMENT : "installed_as"
-    EQUIPMENT_MASTER ||--o{ EQUIPMENT_TASK : "has"
-    EQUIPMENT_MASTER ||--o{ EQUIPMENT_MAINTENANCE : "undergoes"
-    ROOM_EQUIPMENT ||--o{ EQUIPMENT_MAINTENANCE : "maintained_as"
-    RESERVATION ||--o{ REPORT : "generates"
-    RESERVATION ||--o{ MEETING_NOTE : "has"
-    USER ||--o{ RESERVATION : "makes"
-    USER ||--o{ EQUIPMENT_TASK : "assigned"
-    USER ||--o{ MEETING_NOTE : "writes"
-    USER ||--o{ VACATION : "takes"
-    DEPARTMENT ||--o{ USER : "employs"
-    DEPARTMENT ||--o{ EQUIPMENT_TASK : "owns"
-    USER ||--o{ VACATION : "approves"
-
-``` 
+    maintenance_images {
+        int id PK
+        int maintenance_id FK
+        varchar image_path
+        text caption
+        datetime upload_time
+    }
+    
+    maintenance_comments {
+        int id PK
+        int maintenance_id FK
+        varchar user_id FK
+        text content
+        datetime created_at
+    }
+    
+    maintenance_likes {
+        int id PK
+        int maintenance_id FK
+        varchar user_id FK
+        datetime created_at
+    }
+    
+    notifications {
+        int id PK
+        varchar user_id FK
+        enum type
+        text content
+        boolean is_read
+        datetime created_at
+    }
+    
+    users {
+        varchar id PK
+        varchar username
+        varchar email
+        varchar password
+        datetime created_at
+    }

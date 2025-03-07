@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+   <!-- 기본 메타 태그 -->
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Python(파이썬) 초보자 강의 5편: 파일 처리와 클래스 이해하기! 🚀 - 도유 뉴스</title>
+   <meta name="description" content="Python 초보자를 위한 5편! 파일 읽고 쓰기, 예외 처리, 클래스와 객체 개념을 쉽게 배우고 간단한 메모장 프로그램도 만들어보세요. 코딩을 더 쉽고 재미있게 배워보세요!">
+   
+   <!-- 오픈그래프 메타 태그 -->
+   <meta property="og:type" content="article">
+   <meta property="og:title" content="Python(파이썬) 초보자 강의 5편: 파일 처리와 클래스 이해하기! 🚀">
+   <meta property="og:description" content="Python 초보자를 위한 5편! 파일 읽고 쓰기, 예외 처리, 클래스와 객체 개념을 쉽게 배우고 간단한 메모장 프로그램도 만들어보세요. 코딩을 더 쉽고 재미있게 배워보세요!">
+   <meta property="og:image" content="https://placehold.co/600x400">
+   <meta property="og:url" content="https://doyou-news.tistory.com/20">
+   <meta property="og:site_name" content="도유 뉴스">
+   
+   <!-- 트위터 카드 -->
+   <meta name="twitter:card" content="summary_large_image">
+   <meta name="twitter:title" content="Python(파이썬) 초보자 강의 5편: 파일 처리와 클래스 이해하기! 🚀">
+   <meta name="twitter:description" content="Python 초보자를 위한 5편! 파일 읽고 쓰기, 예외 처리, 클래스와 객체 개념을 쉽게 배우고 간단한 메모장 프로그램도 만들어보세요. 코딩을 더 쉽고 재미있게 배워보세요!">
+   <meta name="twitter:image" content="https://placehold.co/600x400">
+   
+   <!-- 검색엔진 최적화 태그 -->
+   <meta name="author" content="도유 뉴스">
+   <meta name="keywords" content="파이썬, Python, 파이썬 파일 처리, 파이썬 클래스, 파이썬 예외 처리, Python 입문, 코딩 교육, Python 기초, 프로그래밍 학습, 파이썬 메모장">
+   <link rel="canonical" href="https://doyou-news.tistory.com/22">   
+</head>
+<body>
+
+<h1 style="font-family: 'IBM Plex Sans'; font-size: 42px; font-weight: 400; margin: 48px 0; text-align: left; color: #333333; line-height: 1.4;">
+   Python(파이썬) 초보자 강의 5편: 파일 다루기와 클래스 개념 마스터하기! 📂
+</h1>
+
+<!-- 이미지 섹션 (와이드) -->
+<figure style="text-align: center;" class="imageblock alignCenter" data-ke-mobilestyle="widthOrigin">
+   <img src="https://placehold.co/600x400" 
+        alt="Python 파일 처리와 클래스 개념 안내 이미지" 
+        style="max-width: 100%; height: auto; border-radius: 4px;" 
+        width="741" 
+        height="423" 
+        data-origin-width="1792" 
+        data-origin-height="1024"
+        loading="lazy"
+        data-phocus-index="0">
+   <figcaption style="margin-top: 8px; font-size: 14px; color: #666666;">Python으로 파일을 읽고 쓰고, 객체 지향 프로그래밍의 기초를 배워봐요!</figcaption>
+</figure>
+
+<!-- 소개 문단 -->
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+   안녕하세요, 테크 러버 여러분! 😊 
+   
+   <a href="https://doyou-news.tistory.com/12">지난 4편</a>에서는 Python의 함수와 모듈에 대해 배우고, 심지어 간단한 숫자 맞히기 게임까지 만들어보았는데요. 잘 따라오셨나요?
+   
+   오늘은 Python의 또 다른 중요한 기능인 '파일 입출력'과 객체 지향 프로그래밍의 기초인 '클래스'에 대해 알아볼 거예요! 🚀 
+   
+   파일을 읽고 쓰는 방법을 배우면 데이터를 저장하고 불러올 수 있게 되고, 클래스를 이해하면 더 체계적인 프로그램을 만들 수 있답니다. 걱정 마세요! 이번에도 실생활의 예시를 통해 쉽게 설명해드릴 테니까요. 중학생 여러분도 충분히 이해할 수 있을 거예요! 👍
+</p>
+
+<!-- 목차 섹션 -->
+<div class="book-toc" style="background: #f2f4f8; padding: 24px; border-radius: 4px; margin: 32px 0;">
+   <h2 style="font-family: 'IBM Plex Sans'; font-weight: 600; color: #4589ff; margin: 0 0 16px 0; line-height: 1.6;">목차</h2>
+   <ul style="list-style-type: none; padding: 0; margin: 0; font-family: 'IBM Plex Sans';">
+       <li style="padding-left: 16px; margin: 12px 0; line-height: 1.6;">
+           <a href="#file_io" class="hover-effect">1. 파일 읽고 쓰기 기초</a>
+       </li>
+       <li style="padding-left: 16px; margin: 12px 0; line-height: 1.6;">
+           <a href="#exception" class="hover-effect">2. 예외 처리 자세히 배우기</a>
+       </li>
+       <li style="padding-left: 16px; margin: 12px 0; line-height: 1.6;">
+           <a href="#class" class="hover-effect">3. 클래스와 객체 이해하기</a>
+       </li>
+       <li style="padding-left: 16px; margin: 12px 0; line-height: 1.6;">
+           <a href="#notepad" class="hover-effect">4. 간단한 메모장 프로그램 만들기</a>
+       </li>
+       <li style="padding-left: 16px; margin: 12px 0; line-height: 1.6;">
+           <a href="#project" class="hover-effect">5. 실전 프로젝트 따라하기</a>
+       </li>
+       <li style="padding-left: 16px; margin: 12px 0; line-height: 1.6;">
+           <a href="#next" class="hover-effect">6. 다음 편 미리보기</a>
+       </li>
+   </ul>
+</div>
+
+<!-- 첫 번째 섹션 -->
+<h2 id="file_io" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">1. 파일 읽고 쓰기 기초</span>
+</h2>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    우리가 컴퓨터로 작업할 때 가장 기본적인 활동 중 하나는 파일을 열고 내용을 보거나 새로운 내용을 저장하는 것이죠. Python에서도 이러한 '파일 입출력' 작업이 매우 중요해요! 
+    
+    파일 입출력을 마치 일기장에 비유해볼게요. 일기장을 열어서 내용을 읽거나(읽기), 새로운 일기를 쓰거나(쓰기), 또는 기존 일기에 내용을 추가하는(추가) 것과 같답니다.
+</p>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">파일 열기 - open() 함수</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    Python에서 파일을 다루기 위해서는 먼저 open() 함수를 사용해 파일을 열어야 해요. 마치 일기장을 펼치는 것과 같죠!
+</p>
+
+<!-- 코드 블록 (Dark Mode Terminal with Syntax Highlighting & Copy Button) -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            파일 열기 예제
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code># 파일 열기 기본 형식
+# open('파일이름', '모드')
+
+# 읽기 모드로 파일 열기
+file = open('my_diary.txt', 'r')
+
+# 작업 후에는 항상 파일을 닫아주세요!
+file.close()</code></pre>
+    </div>
+</div>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    open() 함수에서 사용하는 주요 모드들입니다:
+</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 32px 0; font-family: 'IBM Plex Sans';">
+    <thead>
+        <tr style="background: #f2f4f8;">
+            <th style="padding: 16px; text-align: left; border-bottom: 2px solid #78a9ff; line-height: 1.6;">모드</th>
+            <th style="padding: 16px; text-align: left; border-bottom: 2px solid #78a9ff; line-height: 1.6;">설명</th>
+            <th style="padding: 16px; text-align: left; border-bottom: 2px solid #78a9ff; line-height: 1.6;">비유</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">'r'</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">읽기 모드 (기본값)</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">일기장을 펼쳐서 읽기만 하는 상태</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">'w'</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">쓰기 모드 (파일이 있으면 내용 삭제)</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">일기장 페이지를 깨끗이 지우고 새로 쓰기</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">'a'</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">추가 모드 (파일 끝에 내용 추가)</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">기존 일기 밑에 새로운 내용 추가하기</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">'r+'</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">읽기+쓰기 모드</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">일기장을 읽으면서 수정도 할 수 있는 상태</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">파일 읽기</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    파일을 열었으면 내용을 읽어볼 차례입니다! Python에서는 파일 내용을 읽는 다양한 방법을 제공해요.
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            파일 읽기 예제
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code># 파일 전체 내용 읽기
+file = open('my_diary.txt', 'r')
+content = file.read()
+print(content)
+file.close()
+
+# 한 줄씩 읽기
+file = open('my_diary.txt', 'r')
+for line in file:
+    print(line.strip())  # strip()은 줄바꿈 문자를 제거해줍니다
+file.close()
+</code></pre>
+    </div>
+</div>
+
+<!-- 두 번째 섹션 -->
+<h2 id="exception" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">2. 예외 처리 자세히 배우기</span>
+</h2>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    프로그램을 실행하다 보면 예상치 못한 오류가 발생할 수 있어요. 예를 들어, 존재하지 않는 파일을 열려고 한다거나, 나눗셈에서 0으로 나누는 경우처럼요. 이런 오류를 '예외(Exception)'라고 하는데, Python에서는 이런 예외 상황을 우아하게 처리할 수 있는 방법을 제공합니다.
+</p>
+
+<div class="highlight-box" style="font-family: 'IBM Plex Sans'; background-color: #f0f4ff; padding: 16px; border-left: 4px solid #4589ff; margin: 24px 0; line-height: 1.8;">
+    <p data-ke-size="size16" style="margin: 0;">
+        <strong>예외 처리가 필요한 이유:</strong> 예외가 발생하면 프로그램이 갑자기 중단될 수 있어요. 예외 처리를 하면 오류가 발생해도 프로그램이 계속 실행되도록 할 수 있고, 사용자에게 친절한 메시지를 보여줄 수 있답니다.
+    </p>
+</div>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">try-except 구문</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    Python에서는 'try-except' 구문을 사용해 예외를 처리해요. 마치 안전망을 설치하는 것과 같죠!
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            예외 처리 예제
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code>try:
+    # 오류가 발생할 수 있는 코드
+    file = open('존재하지_않는_파일.txt', 'r')
+    content = file.read()
+    print(content)
+    file.close()
+except FileNotFoundError:
+    # 파일이 없을 때 실행되는 코드
+    print("파일을 찾을 수 없습니다!")
+except:
+    # 그 외 모든 예외를 처리하는 코드
+    print("알 수 없는 오류가 발생했습니다!")
+</code></pre>
+    </div>
+</div>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">finally 구문</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    예외 발생 여부와 상관없이 반드시 실행해야 하는 코드가 있다면 'finally' 구문을 사용해요. 파일을 열었다면 반드시 닫아야 하는 것처럼요!
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            finally 구문 예제
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code>try:
+    file = open('my_diary.txt', 'r')
+    content = file.read()
+    print(content)
+except FileNotFoundError:
+    print("파일을 찾을 수 없습니다!")
+except:
+    print("알 수 없는 오류가 발생했습니다!")
+finally:
+    # 파일이 성공적으로 열렸을 경우에만 닫습니다
+    if 'file' in locals() and file is not None:
+        file.close()
+        print("파일을 안전하게 닫았습니다.")
+</code></pre>
+    </div>
+</div>
+
+<!-- 세 번째 섹션 -->
+<h2 id="class" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">3. 클래스와 객체 이해하기</span>
+</h2>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    이제 Python의 가장 강력한 기능 중 하나인 '객체 지향 프로그래밍'에 대해 알아볼게요. 클래스(Class)는 객체(Object)를 만들기 위한 설계도와 같은 역할을 합니다. 실생활에 비유해보면, '자동차'라는 클래스가 있고, 그로부터 만들어진 '내 차', '친구 차'는 각각 다른 객체인 셈이죠.
+</p>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">클래스 만들기</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    클래스는 'class' 키워드를 사용해 만들어요. 클래스 안에는 데이터(속성)와 기능(메서드)을 정의할 수 있어요.
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+   <!-- Terminal Header -->
+   <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+       <!-- Control Buttons -->
+       <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+           <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+           <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+           <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+       </div>
+       <!-- Title -->
+       <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+           클래스 기본 예제
+       </div>
+       <!-- Copy Button -->
+       <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+           </svg>
+           <span>Copy</span>
+       </button>
+   </div>
+   <!-- Code Content -->
+   <div style="display: flex;">
+       <!-- Line Numbers -->
+       <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+           1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18
+       </div>
+       <!-- Code with Syntax Highlighting -->
+       <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code># Student 클래스 정의하기
+class Student:
+   # __init__은 특별한 메서드로, 객체가 생성될 때 자동으로 호출됩니다
+   def __init__(self, name, age, grade):
+       self.name = name    # 이름 속성
+       self.age = age      # 나이 속성
+       self.grade = grade  # 학년 속성
+       self.scores = []    # 성적 목록
+   
+   # 점수 추가 메서드
+   def add_score(self, score):
+       self.scores.append(score)
+   
+   # 평균 점수 계산 메서드
+   def get_average(self):
+       if self.scores:
+           return sum(self.scores) / len(self.scores)
+       else:
+           return 0
+</code></pre>
+   </div>
+</div>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+   <span style="color: #4589ff;">객체 생성하고 사용하기</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+   클래스를 정의했다면, 이제 그 클래스를 바탕으로 객체를 생성해봅시다. 마치 설계도를 바탕으로 실제 물건을 만드는 것과 같아요!
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+   <!-- Terminal Header -->
+   <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+       <!-- Control Buttons -->
+       <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+           <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+           <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+           <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+       </div>
+       <!-- Title -->
+       <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+           객체 생성 및 사용 예제
+       </div>
+       <!-- Copy Button -->
+       <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+           </svg>
+           <span>Copy</span>
+       </button>
+   </div>
+   <!-- Code Content -->
+   <div style="display: flex;">
+       <!-- Line Numbers -->
+       <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+           1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14
+       </div>
+       <!-- Code with Syntax Highlighting -->
+       <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code># Student 객체 생성하기
+student1 = Student("철수", 15, 3)  # 철수는 15살 3학년
+student2 = Student("영희", 14, 2)  # 영희는 14살 2학년
+
+# 객체의 메서드 사용하기
+student1.add_score(85)  # 철수의 첫 번째 시험 점수
+student1.add_score(92)  # 철수의 두 번째 시험 점수
+
+student2.add_score(88)  # 영희의 첫 번째 시험 점수
+student2.add_score(95)  # 영희의 두 번째 시험 점수
+
+# 결과 출력하기
+print(f"{student1.name}의 평균 점수: {student1.get_average()}")  # 철수의 평균: 88.5
+print(f"{student2.name}의 평균 점수: {student2.get_average()}")  # 영희의 평균: 91.5
+</code></pre>
+   </div>
+</div>
+
+<div class="highlight-box" style="font-family: 'IBM Plex Sans'; background-color: #f0f4ff; padding: 16px; border-left: 4px solid #4589ff; margin: 24px 0; line-height: 1.8;">
+   <p data-ke-size="size16" style="margin: 0;">
+       <strong>클래스 사용 시 주의할 점:</strong> 클래스 정의에서 메서드의 첫 번째 매개변수는 항상 'self'입니다. 이는 객체 자신을 가리키며, 객체의 속성이나 다른 메서드에 접근할 때 사용됩니다. 하지만 메서드를 호출할 때는 'self'를 직접 전달하지 않아요. Python이 자동으로 처리해줍니다!
+   </p>
+</div>
+
+<!-- 네 번째 섹션 -->
+<h2 id="notepad" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">4. 간단한 메모장 프로그램 만들기</span>
+</h2>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    이제 지금까지 배운 내용을 모두 활용하여 간단한 메모장 프로그램을 만들어볼게요! 파일 입출력, 예외 처리, 클래스 개념을 모두 사용해볼 거예요. 직접 코딩해보면서 Python의 실전 감각을 키워봅시다! 🚀
+</p>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">메모장 클래스 설계하기</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    먼저 메모장의 기능을 담당할 클래스를 만들어볼게요. 메모장은 메모를 작성하고, 저장하고, 불러오고, 삭제하는 기능이 필요하겠죠?
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            메모장 클래스 정의
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code>class Notepad:
+    def __init__(self, filename="my_notes.txt"):
+        """메모장 초기화, 기본 파일명은 my_notes.txt"""
+        self.filename = filename
+        self.notes = []
+        self.load_notes()  # 프로그램 시작 시 자동으로 메모 불러오기
+    
+    def add_note(self, note):
+        """새로운 메모 추가"""
+        import datetime
+        timestamp = datetime.datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
+        self.notes.append(f"{timestamp} {note}")
+        self.save_notes()  # 메모 추가 후 자동 저장
+        return True
+    
+    def view_notes(self):
+        """모든 메모 보기"""
+        if not self.notes:
+            return "메모가 없습니다. 새 메모를 추가해보세요!"
+        
+        result = "=== 나의 메모장 ===\n"
+        for i, note in enumerate(self.notes, 1):
+            result += f"{i}. {note}\n"
+        return result
+    
+    def save_notes(self):
+        """메모를 파일에 저장"""
+        try:
+            with open(self.filename, 'w', encoding='utf-8') as file:
+                for note in self.notes:
+                    file.write(note + '\n')
+            return True
+        except Exception as e:
+            print(f"저장 중 오류 발생: {e}")
+            return False
+    
+    def load_notes(self):
+        """파일에서 메모 불러오기"""
+        try:
+            with open(self.filename, 'r', encoding='utf-8') as file:
+                self.notes = [line.strip() for line in file.readlines()]
+            return True
+        except FileNotFoundError:
+            # 파일이 없으면 빈 메모장으로 시작
+            return True
+        except Exception as e:
+            print(f"불러오기 중 오류 발생: {e}")
+            return False
+</code></pre>
+    </div>
+</div>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">메모장 프로그램 실행하기</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    이제 만든 메모장 클래스를 활용해 간단한 메뉴 기반 프로그램을 만들어볼게요. 사용자가 메뉴를 선택하면 해당 기능을 수행하는 방식이에요.
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            메모장 프로그램 실행 코드
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code>def run_notepad():
+    """메모장 프로그램 실행"""
+    notepad = Notepad()
+    
+    while True:
+        print("\n===== 나만의 메모장 =====")
+        print("1. 새 메모 추가하기")
+        print("2. 모든 메모 보기")
+        print("3. 종료하기")
+        
+        try:
+            choice = int(input("\n원하는 메뉴를 선택하세요 (1-3): "))
+            
+            if choice == 1:
+                note = input("새로운 메모 내용을 입력하세요: ")
+                if notepad.add_note(note):
+                    print("메모가 성공적으로 추가되었습니다!")
+                else:
+                    print("메모 추가 중 오류가 발생했습니다.")
+                    
+            elif choice == 2:
+                print(notepad.view_notes())
+                
+            elif choice == 3:
+                print("메모장 프로그램을 종료합니다. 안녕히 가세요!")
+                break
+                
+            else:
+                print("올바른 메뉴 번호를 입력해주세요 (1-3).")
+                
+        except ValueError:
+            print("숫자만 입력해주세요.")
+            
+# 프로그램 실행
+if __name__ == "__main__":
+    run_notepad()
+</code></pre>
+    </div>
+</div>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    이 프로그램을 실행하면, 사용자는 새 메모를 추가하거나, 모든 메모를 확인하거나, 프로그램을 종료할 수 있어요. 메모는 자동으로 파일에 저장되기 때문에 프로그램을 종료했다가 다시 실행해도 이전 메모들이 그대로 남아있답니다! 🎉
+</p>
+
+<div class="highlight-box" style="font-family: 'IBM Plex Sans'; background-color: #f0f4ff; padding: 16px; border-left: 4px solid #4589ff; margin: 24px 0; line-height: 1.8;">
+    <p data-ke-size="size16" style="margin: 0;">
+        <strong>with 구문이란?</strong> 코드에서 본 'with open(...) as file:' 구문은 파일을 안전하게 다루기 위한 Python의 특별한 구문이에요. with 블록이 끝나면 자동으로 파일이 닫히기 때문에 file.close()를 직접 호출할 필요가 없어요. 그래서 예외가 발생해도 파일이 안전하게 닫힌답니다!
+    </p>
+</div>
+
+<!-- 다섯 번째 섹션 -->
+<h2 id="project" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">5. 실전 프로젝트 따라하기</span>
+</h2>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    지금까지 배운 내용을 더 심화해서 실전 프로젝트를 만들어볼게요. 우리가 만들 프로젝트는 '학생 성적 관리 시스템'이에요. 학생 정보와 성적을 저장하고, 통계를 내고, CSV 파일로 내보내는 기능까지 갖춘 프로그램이랍니다! 🚀
+</p>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">학생 성적 관리 시스템의 주요 기능</span>
+</h3>
+
+<ul class="checklist" style="list-style-type: none; padding-left: 20px; font-family: 'IBM Plex Sans'; margin: 24px 0;">
+    <li style="margin: 12px 0; line-height: 1.8;">✓ 학생 정보(이름, 학번) 등록하기</li>
+    <li style="margin: 12px 0; line-height: 1.8;">✓ 과목별 성적 입력하기</li>
+    <li style="margin: 12px 0; line-height: 1.8;">✓ 전체 학생 성적 확인하기</li>
+    <li style="margin: 12px 0; line-height: 1.8;">✓ 학생별 평균 성적 계산하기</li>
+    <li style="margin: 12px 0; line-height: 1.8;">✓ 성적 데이터를 CSV 파일로 저장하기</li>
+    <li style="margin: 12px 0; line-height: 1.8;">✓ CSV 파일에서 성적 데이터 불러오기</li>
+</ul>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    이 프로젝트는 좀 더 복잡하기 때문에, 코드를 여러 부분으로 나누어 설명할게요. 먼저 전체 시스템의 구조를 살펴볼까요?
+</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 32px 0; font-family: 'IBM Plex Sans';">
+    <thead>
+        <tr style="background: #f2f4f8;">
+            <th style="padding: 16px; text-align: left; border-bottom: 2px solid #78a9ff; line-height: 1.6;">클래스/모듈</th>
+            <th style="padding: 16px; text-align: left; border-bottom: 2px solid #78a9ff; line-height: 1.6;">역할</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">Student 클래스</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">학생 정보와 성적을 관리하는 클래스</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">GradeManager 클래스</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">여러 학생의 성적 정보를 관리하는 클래스</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">FileHandler 클래스</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">CSV 파일 입출력을 담당하는 클래스</td>
+        </tr>
+        <tr>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">main.py</td>
+            <td style="padding: 16px; border-bottom: 1px solid #e8e8e8; line-height: 1.6;">메인 프로그램 실행 모듈</td>
+        </tr>
+    </tbody>
+</table>
+
+<h3 data-ke-size="size23" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 40px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">Student 클래스 구현하기</span>
+</h3>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    먼저, 가장 기본이 되는 Student 클래스를 만들어볼게요.
+</p>
+
+<!-- 코드 블록 -->
+<div class="terminal-container" style="background: #1E1E1E; border-radius: 8px; margin: 24px 0; font-family: 'IBM Plex Mono', monospace; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 1px 8px rgba(0,0,0,0.2); position: relative;">
+    <!-- Terminal Header -->
+    <div class="terminal-header" style="background: #2D2D2D; padding: 8px 16px; position: relative; border-top-left-radius: 8px; border-top-right-radius: 8px; border-bottom: 1px solid #3a3a3a;">
+        <!-- Control Buttons -->
+        <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 16px; display: flex; gap: 8px;">
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FF5F56; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #FFBD2E; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+            <span style="width: 12px; height: 12px; border-radius: 50%; background: #27C93F; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1); display: inline-block; opacity: 0.8;"></span>
+        </div>
+        <!-- Title -->
+        <div style="text-align: center; color: #CCCCCC; font-size: 13px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+            Student 클래스 구현
+        </div>
+        <!-- Copy Button -->
+        <button onclick="copyCode(this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: #4D4D4D; border: none; color: #CCCCCC; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.2s ease;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span>Copy</span>
+        </button>
+    </div>
+    <!-- Code Content -->
+    <div style="display: flex;">
+        <!-- Line Numbers -->
+        <div class="line-numbers" style="padding: 20px 12px; background: #252525; color: #666; text-align: right; user-select: none; border-right: 1px solid #3a3a3a;">
+            1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28
+        </div>
+        <!-- Code with Syntax Highlighting -->
+        <pre style="margin: 0; padding: 20px; color: #D4D4D4; line-height: 1.6; overflow-x: auto; flex-grow: 1; background: #1E1E1E;"><code># student.py
+class Student:
+    """학생 정보와 성적을 관리하는 클래스"""
+    
+    def __init__(self, student_id, name):
+        self.student_id = student_id  # 학번
+        self.name = name              # 이름
+        self.grades = {}              # 과목별 성적을 저장할 딕셔너리
+    
+    def add_grade(self, subject, score):
+        """과목별 성적을 추가하는 메서드"""
+        if 0 <= score <= 100:
+            self.grades[subject] = score
+            return True
+        else:
+            print("성적은 0부터 100 사이의 값이어야 합니다.")
+            return False
+    
+    def get_average(self):
+        """모든 과목의 평균 성적을 계산하는 메서드"""
+        if not self.grades:
+            return 0
+        return sum(self.grades.values()) / len(self.grades)
+    
+    def get_grade_report(self):
+        """성적 보고서를 문자열로 반환하는 메서드"""
+        report = f"학번: {self.student_id}, 이름: {self.name}\n"
+        report += "과목별 성적:\n"
+        
+        for subject, score in self.grades.items():
+            report += f"  - {subject}: {score}\n"
+        
+        report += f"평균 성적: {self.get_average():.2f}"
+        return report
+</code></pre>
+    </div>
+</div>
+
+<h2 id="faq" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">자주 묻는 질문</span>
+</h2>
+
+<!-- FAQ 항목 -->
+<div style="margin: 24px 0;">
+    <div style="background: #f8f9fc; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; font-family: 'IBM Plex Sans';">
+        <div style="background: #f2f4f8; padding: 16px 20px; border-bottom: 1px solid #e8e8e8;">
+            <p style="margin: 0; color: #4589ff; font-weight: 600; line-height: 1.6;">
+                파일을 열 때 'encoding='utf-8''을 추가하는 이유가 무엇인가요?
+            </p>
+        </div>
+        <div style="padding: 20px;">
+            <p style="margin: 0; color: #4d4d4d; line-height: 1.8;">
+                'encoding='utf-8''을 추가하는 이유는 한글이나 특수 문자가 포함된 파일을 제대로 읽고 쓰기 위해서입니다. 특히 한글을 포함한 파일을 다룰 때는 항상 인코딩을 지정해주는 것이 좋습니다. UTF-8은 전 세계 대부분의 문자를 지원하는 인코딩 방식이라 권장됩니다.
+            </p>
+        </div>
+    </div>
+
+    <div style="background: #f8f9fc; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; font-family: 'IBM Plex Sans';">
+        <div style="background: #f2f4f8; padding: 16px 20px; border-bottom: 1px solid #e8e8e8;">
+            <p style="margin: 0; color: #4589ff; font-weight: 600; line-height: 1.6;">
+                클래스와 함수의 차이점은 무엇인가요?
+            </p>
+        </div>
+        <div style="padding: 20px;">
+            <p style="margin: 0; color: #4d4d4d; line-height: 1.8;">
+                함수는 특정 작업을 수행하는 코드 블록으로, 입력값을 받아 처리하고 결과를 반환합니다. 반면, 클래스는 데이터(속성)와 기능(메서드)을 함께 묶어 놓은 설계도와 같은 것입니다. 함수가 '동작'에 초점을 맞춘다면, 클래스는 '객체'를 모델링하는 데 중점을 둡니다. 클래스를 통해 만들어진 객체는 상태를 유지할 수 있어 더 복잡한 프로그램을 구조적으로 설계할 수 있습니다.
+            </p>
+        </div>
+    </div>
+
+    <div style="background: #f8f9fc; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; font-family: 'IBM Plex Sans';">
+        <div style="background: #f2f4f8; padding: 16px 20px; border-bottom: 1px solid #e8e8e8;">
+            <p style="margin: 0; color: #4589ff; font-weight: 600; line-height: 1.6;">
+                CSV 파일이란 무엇이고, 어떻게 다루나요?
+            </p>
+        </div>
+        <div style="padding: 20px;">
+            <p style="margin: 0; color: #4d4d4d; line-height: 1.8;">
+                CSV(Comma-Separated Values)는 콤마로 구분된 값들을 의미하며, 간단한 형태의 스프레드시트나 데이터베이스 데이터를 저장하는 텍스트 파일 형식입니다. Python에서는 'csv' 모듈을 사용하여 CSV 파일을 쉽게 읽고 쓸 수 있습니다. 예를 들어, 'csv.reader()'로 CSV 파일을 읽고, 'csv.writer()'로 CSV 파일에 데이터를 쓸 수 있습니다. 또한 'pandas' 라이브러리를 사용하면 더 편리하게 CSV 파일을 다룰 수 있습니다.
+            </p>
+        </div>
+    </div>
+
+    <div style="background: #f8f9fc; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; font-family: 'IBM Plex Sans';">
+        <div style="background: #f2f4f8; padding: 16px 20px; border-bottom: 1px solid #e8e8e8;">
+            <p style="margin: 0; color: #4589ff; font-weight: 600; line-height: 1.6;">
+                예외 처리는 언제 사용하는 것이 좋은가요?
+            </p>
+        </div>
+        <div style="padding: 20px;">
+            <p style="margin: 0; color: #4d4d4d; line-height: 1.8;">
+                예외 처리는 프로그램 실행 중 발생할 수 있는 오류 상황을 미리 예측하고 대비하는 기능으로, 다음과 같은 경우에 사용하는 것이 좋습니다. 1) 파일 입출력처럼 외부 리소스를 사용할 때, 2) 사용자 입력을 처리할 때, 3) 네트워크 통신이나 데이터베이스 연결과 같은 불안정한 작업을 할 때, 4) 프로그램이 중단되지 않고 계속 실행되어야 하는 중요한 부분에서 사용하면 좋습니다. 하지만 예외 처리를 너무 남용하면 코드가 복잡해질 수 있으니 적절히 사용하는 것이 중요합니다.
+            </p>
+        </div>
+    </div>
+
+    <div style="background: #f8f9fc; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; font-family: 'IBM Plex Sans';">
+        <div style="background: #f2f4f8; padding: 16px 20px; border-bottom: 1px solid #e8e8e8;">
+            <p style="margin: 0; color: #4589ff; font-weight: 600; line-height: 1.6;">
+                클래스에서 __init__ 메서드는 어떤 역할을 하나요?
+            </p>
+        </div>
+        <div style="padding: 20px;">
+            <p style="margin: 0; color: #4d4d4d; line-height: 1.8;">
+                __init__ 메서드는 클래스의 인스턴스(객체)가 생성될 때 자동으로 호출되는 특별한 메서드로, '초기화 메서드' 또는 '생성자'라고도 합니다. 이 메서드는 객체가 생성될 때 필요한 초기 설정을 담당합니다. 예를 들어, 객체의 속성(변수)을 초기화하거나, 객체 생성 시 필요한 준비 작업을 수행합니다. __init__ 메서드의 첫 번째 매개변수는 항상 'self'로, 생성되는 객체 자신을 가리킵니다.
+            </p>
+        </div>
+    </div>
+
+    <div style="background: #f8f9fc; border: 1px solid #e8e8e8; border-radius: 8px; margin-bottom: 16px; overflow: hidden; font-family: 'IBM Plex Sans';">
+        <div style="background: #f2f4f8; padding: 16px 20px; border-bottom: 1px solid #e8e8e8;">
+            <p style="margin: 0; color: #4589ff; font-weight: 600; line-height: 1.6;">
+                파일 처리 후 반드시 close()를 호출해야 하는 이유는 무엇인가요?
+            </p>
+        </div>
+        <div style="padding: 20px;">
+            <p style="margin: 0; color: #4d4d4d; line-height: 1.8;">
+                파일 처리 후 close()를 호출하는 것은 매우 중요합니다. 그 이유는 다음과 같습니다. 1) 리소스 누수 방지: 파일을 닫지 않으면 시스템 리소스가 계속 사용되어 메모리 부족 문제가 발생할 수 있습니다. 2) 데이터 손실 방지: 파일에 쓰기 작업을 한 경우, close()를 호출하지 않으면 일부 데이터가 버퍼에만 남아있고 실제 파일에 저장되지 않을 수 있습니다. 3) 파일 잠금 해제: 다른 프로그램이나 프로세스가 해당 파일에 접근할 수 있도록 합니다. 하지만 with 구문을 사용하면 블록이 끝날 때 자동으로 파일이 닫히므로 더 안전하고 편리합니다.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- 여섯 번째 섹션 -->
+<h2 id="next" data-ke-size="size26" style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0; line-height: 1.4;">
+    <span style="color: #4589ff;">6. 다음 편 미리보기</span>
+</h2>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+    오늘은 Python의 파일 입출력, 예외 처리, 클래스와 객체 개념에 대해 알아보았어요! 😊 또한 이를 활용해 간단한 메모장 프로그램과 학생 성적 관리 시스템의 기초를 구현해보았답니다. 
+    
+    여러분은 이제 Python의 더 심화된 기능들을 활용할 수 있게 되었어요! 파일에 데이터를 저장하고 불러오는 방법을 알게 되었고, 예외 처리를 통해 더 안정적인 프로그램을 만들 수 있게 되었죠. 또한 클래스를 통해 더 체계적이고 확장 가능한 프로그램 구조를 만들 수 있게 되었답니다.
+</p
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4d4d4d; line-height: 1.8; margin: 24px 0;">
+   혹시 이해가 잘 안 되는 부분이 있다면 댓글로 남겨주세요. 자세히 설명해드릴게요! 그리고 메모장 프로그램이나 성적 관리 시스템을 확장해보고 싶은 분들은 어떤 기능을 추가했는지 댓글로 공유해주시면 좋겠어요!
+</p>
+
+<p data-ke-size="size16" style="font-family: 'IBM Plex Sans'; color: #4589ff; line-height: 1.8; margin: 24px 0;">
+   Python 초보자 강의 6편에서는 이런 내용을 다룰 예정이에요:
+</p>
+
+<ul class="checklist" style="list-style-type: none; padding-left: 20px; font-family: 'IBM Plex Sans'; margin: 24px 0;">
+   <li style="margin: 12px 0; line-height: 1.8;">✓ 웹 크롤링 기초 배우기</li>
+   <li style="margin: 12px 0; line-height: 1.8;">✓ GUI 프로그래밍 시작하기</li>
+   <li style="margin: 12px 0; line-height: 1.8;">✓ 데이터 시각화 도구 활용하기</li>
+   <li style="margin: 12px 0; line-height: 1.8;">✓ 외부 API 연동하기</li>
+   <li style="margin: 12px 0; line-height: 1.8;">✓ 미니 게임 업그레이드하기</li>
+   <li style="margin: 12px 0; line-height: 1.8;">✓ 최종 프로젝트 준비하기</li>
+</ul>
+
+<blockquote style="border-left: 4px solid #78a9ff; padding: 16px 20px; margin: 32px 0; font-family: 'IBM Plex Serif'; font-style: italic; color: #666666; line-height: 1.8; background-color: #f8f9fc;">
+   "프로그래밍을 배우는 과정은 마치 퍼즐을 맞추는 것과 같습니다. 하나씩 조각을 찾아 맞추다 보면 어느새 멋진 그림이 완성되어 있죠. 지금까지 배운 내용들이 여러분의 프로그래밍 퍼즐에 중요한 조각이 되길 바랍니다!"
+</blockquote>
+
+<!-- 마무리 인사말 -->
+<div style="background: #f0f4ff; padding: 24px; border-radius: 4px; margin: 32px 0; font-family: 'IBM Plex Sans';">
+   <p data-ke-size="size16" style="color: #4d4d4d; line-height: 1.8; margin: 0 0 24px 0;">
+       지금까지 Python의 파일 처리와 클래스에 대해 알아보았습니다. 이제 여러분은 데이터를 파일에 저장하고, 객체 지향적으로 프로그램을 설계할 수 있는 능력을 갖추게 되었어요! 
+       
+       다음 편에서는 더 실용적이고 흥미로운 주제들을 다룰 예정이니 기대해주세요. 웹 크롤링부터 GUI 프로그래밍까지, Python의 더 넓은 세계를 탐험해볼 거예요.
+       
+       여러분은 Python의 어떤 부분이 가장 흥미로웠나요? 또는 다음 편에서 더 자세히 다루었으면 하는 주제가 있으신가요? 댓글로 여러분의 생각을 공유해주세요!
+   </p>
+   
+   <p data-ke-size="size16" style="color: #4d4d4d; line-height: 1.8; margin: 0;">
+       함께 Python의 세계를 탐험해주셔서 감사합니다. 다음 편에서 또 만나요! 👋
+   </p>
+</div>
+
+<!-- 관련 태그 -->
+<h2 style="font-family: 'IBM Plex Sans'; color: #333333; font-weight: 400; margin: 48px 0 24px 0;" data-ke-size="size26">
+   <span style="color: #4589ff;">관련 태그</span>
+</h2>
+<p style="font-family: 'IBM Plex Sans';" data-ke-size="size16">
+   파이썬, Python, 파일 입출력, Python 클래스, 객체 지향 프로그래밍, 예외 처리, 메모장 프로그램, CSV 파일, Python 초보자, 코딩 교육
+</p>
+</body>
+</html>

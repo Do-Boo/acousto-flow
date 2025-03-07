@@ -1,15 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import '../utils/carbon_colors.dart';
+import '../services/restaurant_service.dart';
+import '../models/restaurant_menu.dart';
 
 class HomeScreen extends StatefulWidget {
+  final bool hideAppBar;
+  final ScrollController? scrollController;
+  
+  HomeScreen({Key? key, this.hideAppBar = false, this.scrollController}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // RestaurantService 추가
+  final RestaurantService _restaurantService = RestaurantService();
+  List<RestaurantMenu> _todayMenus = [];
+  bool _isLoadingMenu = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTodayMenu();
+  }
+  
+  // 오늘의 메뉴 로드 함수
+  Future<void> _loadTodayMenu() async {
+    setState(() {
+      _isLoadingMenu = true;
+    });
+    
+    try {
+      // 실제 서버에서 메뉴 데이터 불러오기
+      final menus = await _restaurantService.getTodayMenu();
+      
+      setState(() {
+        _todayMenus = [menus]; // RestaurantMenu를 List<RestaurantMenu>로 변환
+        _isLoadingMenu = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingMenu = false;
+        _todayMenus = []; // 오류 발생 시 빈 리스트로 초기화
+      });
+      print('Error loading today menu: $e');
+      
+      // 에러 발생 시 스낵바 표시
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('메뉴 정보를 불러오는 데 실패했습니다.'),
+            backgroundColor: CarbonColors.red60,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
   // 지금 이 함수는 샘플 데이터를 리턴하지만, 실제로는 캘린더 서비스/컨트롤러에서 가져와야 합니다
   List<Map<String, dynamic>> _getTodayEvents() {
     return [
@@ -101,113 +154,105 @@ class _HomeScreenState extends State<HomeScreen> {
     final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
     final secondaryColor = isDarkMode ? CarbonColors.gray60 : CarbonColors.gray70;
-    final dividerColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
     
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: isDarkMode
           ? SystemUiOverlayStyle.light.copyWith(
               statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+              statusBarBrightness: Brightness.dark,
               systemNavigationBarColor: backgroundColor,
             )
           : SystemUiOverlayStyle.dark.copyWith(
               statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
               systemNavigationBarColor: backgroundColor,
             ),
       child: Scaffold(
         backgroundColor: backgroundColor,
-        appBar: AppBar(
-          title: Text(
-            '홈',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-              color: textColor,
-            ),
-          ),
-          centerTitle: false,
-          backgroundColor: backgroundColor,
-          elevation: 0,
-          systemOverlayStyle: isDarkMode
-              ? SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent)
-              : SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(1),
-            child: Divider(
-              height: 1,
-              color: dividerColor,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: textColor,
-              ),
-              onPressed: () {
-                // 알림 메뉴 표시
-              },
-            ),
-          ],
-        ),
         body: RefreshIndicator(
           onRefresh: () async {
             // 데이터 새로고침
             await Future.delayed(const Duration(seconds: 1));
+            _loadTodayMenu();
             setState(() {});
           },
           color: CarbonColors.blue60,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 환영 메시지 및 날짜
-                Text(
-                  '안녕하세요, 김도유님',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: isDarkMode
+                ? SystemUiOverlayStyle.light.copyWith(
+                    statusBarColor: Colors.transparent,
+                    statusBarIconBrightness: Brightness.light,
+                    statusBarBrightness: Brightness.dark,
+                  )
+                : SystemUiOverlayStyle.dark.copyWith(
+                    statusBarColor: Colors.transparent,
+                    statusBarIconBrightness: Brightness.dark,
+                    statusBarBrightness: Brightness.light,
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  DateFormat('yyyy년 MM월 dd일 EEEE', 'ko_KR').format(DateTime.now()),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: secondaryColor,
+            child: SingleChildScrollView(
+              controller: widget.scrollController,
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 환영 메시지 및 날짜
+                  Text(
+                    '안녕하세요, 김도유님',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                
-                // 오늘의 일정 섹션
-                _buildSectionHeader('오늘의 일정', '더 보기', () {
-                  Get.toNamed('/calendar');
-                }),
-                const SizedBox(height: 12),
-                _buildTodayEvents(),
-                const SizedBox(height: 24),
-                
-                // 회의실 현황 섹션
-                _buildSectionHeader('회의실 현황', '모두 보기', () {
-                  Get.toNamed('/meeting-rooms');
-                }),
-                const SizedBox(height: 12),
-                _buildRoomStatus(),
-                const SizedBox(height: 24),
-                
-                // 최근 활동 피드
-                _buildSectionHeader('최근 피드', '더 보기', () {
-                  Get.toNamed('/feed');
-                }),
-                const SizedBox(height: 12),
-                _buildRecentPosts(),
-                const SizedBox(height: 24),
-                
-                // 빠른 액션 버튼들
-                _buildQuickActions(),
-                const SizedBox(height: 16),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    DateFormat('yyyy년 MM월 dd일 EEEE', 'ko_KR').format(DateTime.now()),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: secondaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // 구내식당 메뉴 섹션을 가장 먼저 표시
+                  _buildSectionHeader('오늘의 메뉴', '전체 보기', () {
+                    Get.toNamed('/restaurant');
+                  }),
+                  const SizedBox(height: 12),
+                  _buildTodayMenu(),
+                  const SizedBox(height: 24),
+                  
+                  // 오늘의 일정 섹션
+                  _buildSectionHeader('오늘의 일정', '더 보기', () {
+                    Get.toNamed('/calendar');
+                  }),
+                  const SizedBox(height: 12),
+                  _buildTodayEvents(),
+                  const SizedBox(height: 24),
+                  
+                  // 회의실 현황 섹션
+                  _buildSectionHeader('회의실 현황', '모두 보기', () {
+                    Get.toNamed('/meeting-rooms');
+                  }),
+                  const SizedBox(height: 12),
+                  _buildRoomStatus(),
+                  const SizedBox(height: 24),
+                  
+                  // 최근 활동 피드
+                  _buildSectionHeader('최근 피드', '더 보기', () {
+                    Get.toNamed('/feed');
+                  }),
+                  const SizedBox(height: 12),
+                  _buildRecentPosts(),
+                  const SizedBox(height: 24),
+                  
+                  // 빠른 액션 버튼들
+                  _buildQuickActions(),
+                  const SizedBox(height: 88),
+                ],
+              ),
             ),
           ),
         ),
@@ -680,6 +725,265 @@ class _HomeScreenState extends State<HomeScreen> {
               foregroundColor: CarbonColors.blue60,
             ),
             child: Text(buttonText),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 오늘의 메뉴 위젯 구현
+  Widget _buildTodayMenu() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
+    final secondaryColor = isDarkMode ? CarbonColors.gray60 : CarbonColors.gray70;
+    final cardColor = isDarkMode ? CarbonColors.gray90 : Colors.white;
+    final borderColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
+    
+    if (_isLoadingMenu) {
+      return Container(
+        height: 120,
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(CarbonColors.blue60),
+        ),
+      );
+    }
+    
+    if (_todayMenus.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.restaurant,
+        message: '오늘의 메뉴 정보가 없습니다.',
+        buttonText: '메뉴 보기',
+        onButtonPressed: () {
+          Get.toNamed('/restaurant');
+        },
+      );
+    }
+    
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _todayMenus.length,
+        itemBuilder: (context, index) {
+          final menu = _todayMenus[index];
+          
+          return Container(
+            width: 240,
+            margin: EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: borderColor,
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: InkWell(
+              onTap: () {
+                Get.toNamed('/restaurant');
+              },
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 식사 유형 및 날짜 표시
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: _getMealTypeColor(menu.mealType).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            menu.mealTypeText,
+                            style: TextStyle(
+                              color: _getMealTypeColor(menu.mealType),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '오늘',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: secondaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 12),
+                    
+                    // 메인 메뉴
+                    if (menu.mainDish != null) ...[
+                      Text(
+                        menu.mainDish!,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 8),
+                    ],
+                    
+                    // 반찬 목록
+                    if (menu.sideDishes != null && menu.sideDishes!.isNotEmpty) ...[
+                      Text(
+                        menu.sideDishes!.join(', '),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: secondaryColor,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    
+                    const Spacer(),
+                    
+                    // 하단 정보 (칼로리 또는 바로가기)
+                    if (menu.dessert != null)
+                      Text(
+                        '디저트: ${menu.dessert}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                          color: secondaryColor,
+                        ),
+                      )
+                    else
+                      const SizedBox.shrink(),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+  
+  // 식사 유형에 따른 색상 반환
+  Color _getMealTypeColor(MealType type) {
+    switch (type) {
+      case MealType.breakfast:
+        return CarbonColors.blue60;
+      case MealType.lunch:
+        return CarbonColors.green50;
+      case MealType.dinner:
+        return CarbonColors.blue70;
+    }
+  }
+
+  // 네비게이션 메뉴 항목에 회의실 예약 항목 추가
+  Widget _buildMainMenuSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.settings, size: 20, color: CarbonColors.blue60),
+              SizedBox(width: 8),
+              Text(
+                '주요 메뉴',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+          GridView.count(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            children: [
+              _buildMenuTile(
+                title: '회의 일정',
+                icon: Icons.calendar_month,
+                route: '/meeting_schedule',
+                color: CarbonColors.blue60,
+              ),
+              _buildMenuTile(
+                title: '장비 관리',
+                icon: Icons.cable,
+                route: '/tasks',
+                color: CarbonColors.purple60,
+              ),
+              _buildMenuTile(
+                title: '휴가 관리',
+                icon: Icons.beach_access,
+                route: '/vacations',
+                color: CarbonColors.green60,
+              ),
+              _buildMenuTile(
+                title: '식당 메뉴',
+                icon: Icons.restaurant,
+                route: '/restaurant',
+                color: CarbonColors.blue60,
+              ),
+              // 회의실 예약 메뉴 추가
+              _buildMenuTile(
+                title: '회의실 예약',
+                icon: Icons.meeting_room,
+                route: '/meeting_reports',
+                color: CarbonColors.green50,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuTile({
+    required String title,
+    required IconData icon,
+    required String route,
+    required Color color,
+  }) {
+    return InkWell(
+      onTap: () {
+        Get.toNamed(route);
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: 24,
+            color: color,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
