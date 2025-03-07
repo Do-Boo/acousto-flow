@@ -1137,111 +1137,186 @@ class _FeedScreenState extends State<FeedScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
+    final hintColor = isDarkMode ? Colors.grey[400] : Colors.grey[500];
     
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: backgroundColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return SafeArea(
           child: Container(
             padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 16,
-              right: 16,
-              top: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              left: 20,
+              right: 20,
+              top: 20,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 상단 프로필 및 게시 버튼 행
+                // 상단 바 - 제목과 닫기 버튼
+                Row(
+                  children: [
+                    Text(
+                      '새 게시물 작성',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: textColor,
+                      ),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.close, color: textColor),
+                      padding: EdgeInsets.zero,
+                      constraints: BoxConstraints(),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                
+                SizedBox(height: 20),
+                
+                // 프로필 및 입력 필드
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 프로필 이미지 (원형)
                     CircleAvatar(
-                      radius: 20,
+                      radius: 24,
                       backgroundColor: CarbonColors.blue60,
-                      child: Icon(Icons.person, color: Colors.white),
+                      child: Text(
+                        'A',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                     // 입력 필드 (확장)
                     Expanded(
-                      child: Column(
-                        children: [
-                          TextField(
-                            style: TextStyle(color: textColor),
-                            decoration: InputDecoration(
-                              hintText: '무슨 일이 일어나고 있나요?',
-                              hintStyle: TextStyle(color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                              border: InputBorder.none,
-                            ),
-                            maxLines: 5,
-                            minLines: 1,
+                      child: TextField(
+                        style: TextStyle(
+                          color: textColor,
+                          fontSize: 16,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: '무슨 일이 일어나고 있나요?',
+                          hintStyle: TextStyle(
+                            color: hintColor,
+                            fontSize: 16,
                           ),
-                        ],
+                          border: InputBorder.none,
+                        ),
+                        maxLines: 5,
+                        minLines: 3,
                       ),
                     ),
                   ],
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 
                 // 미디어 옵션 및 게시 버튼
                 Row(
                   children: [
                     // 미디어 옵션들
-                    IconButton(
-                      icon: Icon(Icons.photo_library, color: CarbonColors.blue60),
-                      onPressed: () => _pickImageFromGallery(context),
-                      iconSize: 22,
+                    _buildMediaOptionButton(
+                      Icons.photo_library,
+                      '갤러리',
+                      () => _pickImageFromGallery(context),
+                      isDarkMode,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.camera_alt, color: CarbonColors.blue60),
-                      onPressed: () => _pickImageFromCamera(context),
-                      iconSize: 22,
+                    const SizedBox(width: 16),
+                    _buildMediaOptionButton(
+                      Icons.camera_alt,
+                      '카메라',
+                      () => _pickImageFromCamera(context),
+                      isDarkMode,
                     ),
-                    IconButton(
-                      icon: Icon(Icons.gif_box, color: CarbonColors.blue60),
-                      onPressed: () => _showSnackMessage(context, 'GIF 기능이 준비 중입니다'),
-                      iconSize: 22,
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.location_on, color: CarbonColors.blue60),
-                      onPressed: () => _showSnackMessage(context, '위치 기능이 준비 중입니다'),
-                      iconSize: 22,
+                    const SizedBox(width: 16),
+                    _buildMediaOptionButton(
+                      Icons.location_on,
+                      '위치', 
+                      () => _showSnackMessage(context, '위치 기능이 준비 중입니다'),
+                      isDarkMode,
                     ),
                     
                     const Spacer(),
                     
-                    // 게시 버튼 (둥근 버튼)
+                    // 게시 버튼
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: CarbonColors.blue60,
                         foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-                        minimumSize: Size(80, 36),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                         _showSnackMessage(context, '게시물이 공유되었습니다');
                       },
-                      child: const Text('게시', style: TextStyle(fontSize: 14)),
+                      child: Text(
+                        '게시하기',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
               ],
             ),
           ),
         );
       },
+    );
+  }
+  
+  // 미디어 옵션 버튼 위젯
+  Widget _buildMediaOptionButton(
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+    bool isDarkMode,
+  ) {
+    return InkWell(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              color: CarbonColors.blue60,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
