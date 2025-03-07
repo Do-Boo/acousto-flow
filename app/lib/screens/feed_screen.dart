@@ -12,6 +12,7 @@ import '../services/equipment_maintenance_service.dart';
 import 'dart:convert';
 import './maintenance_image_upload_screen.dart';
 import '../main.dart';  // MainScreenState 접근을 위해
+import '../screens/create_feed_dialog.dart'; // 추가: 피드 생성 다이얼로그 클래스 import
 
 class FeedScreen extends StatefulWidget {
   final bool hideAppBar;
@@ -292,11 +293,8 @@ class FeedScreen extends StatefulWidget {
   
   // 피드 게시물 작성 바텀시트를 표시하는 외부 메서드
   void showCreateFeedPost(BuildContext context) {
-    // 내부 상태를 찾아 해당 메서드 호출
-    final state = context.findAncestorStateOfType<_FeedScreenState>();
-    if (state != null) {
-      state.showCreateFeedPost(context);
-    }
+    // CreateFeedDialog 클래스 사용
+    CreateFeedDialog.show(context);
   }
 
   @override
@@ -351,12 +349,15 @@ class _FeedScreenState extends State<FeedScreen> {
   
   // 스낵바 메시지 표시
   void _showSnackMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
+    Get.snackbar(
+      '알림',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Get.isDarkMode ? Colors.grey[800] : Colors.grey[200],
+      colorText: Get.isDarkMode ? Colors.white : Colors.black87,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 4,
+      duration: const Duration(seconds: 2),
     );
   }
   
@@ -685,12 +686,6 @@ class _FeedScreenState extends State<FeedScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => showCreateFeedPost(context),
-        backgroundColor: CarbonColors.blue60,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.add),
-      ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : _errorMessage.isNotEmpty
@@ -728,11 +723,60 @@ class _FeedScreenState extends State<FeedScreen> {
     );
   }
 
+  // 상호작용 버튼 생성
+  Widget _buildInteractionButton(
+    IconData icon, 
+    String count, 
+    VoidCallback onTap,
+    bool isDarkMode,
+  ) {
+    final buttonColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: buttonColor),
+          if (count.isNotEmpty) const SizedBox(width: 4),
+          if (count.isNotEmpty)
+            Text(
+              count,
+              style: TextStyle(
+                fontSize: 13,
+                color: buttonColor,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // 아바타 위젯 생성
+  Widget _buildAvatar(String initial) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: CarbonColors.blue60,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
   // 유지보수 카드 위젯
   Widget _buildMaintenanceCard(Maintenance maintenance, bool isDarkMode) {
     final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
-    final backgroundColor = isDarkMode ? CarbonColors.gray90 : Colors.white;
-    final borderColor = isDarkMode ? CarbonColors.gray80 : CarbonColors.gray20;
+    final secondaryColor = isDarkMode ? CarbonColors.gray60 : CarbonColors.gray70;
+    final backgroundColor = isDarkMode ? CarbonColors.gray90 : CarbonColors.gray10;
     
     // 액션 타입 아이콘 설정
     IconData actionIcon;
@@ -775,164 +819,142 @@ class _FeedScreenState extends State<FeedScreen> {
     final formattedTime = timeFormatter.format(date);
     
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: borderColor.withOpacity(0.2),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(8),
       ),
       color: backgroundColor,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 헤더 (사용자 정보)
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 프로필 사진
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: CarbonColors.blue60,
-                  child: Text(
-                    maintenance.workedBy != null && maintenance.workedBy!.isNotEmpty
-                        ? maintenance.workedBy!.substring(0, 1)
-                        : '?',
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                // 프로필 사진 - 사각형 스타일로 변경
+                _buildAvatar(
+                  maintenance.workedBy != null && maintenance.workedBy!.isNotEmpty
+                      ? maintenance.workedBy!.substring(0, 1)
+                      : '?'
                 ),
-                const SizedBox(width: 12),
-                // 사용자 정보 및 날짜
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            maintenance.workedBy ?? '관리자',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold, 
-                              color: textColor
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              '· $formattedDate $formattedTime',
-                              style: TextStyle(
-                                color: CarbonColors.gray60,
-                                fontSize: 13,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                const SizedBox(width: 8),
+                // 사용자 정보
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      maintenance.workedBy ?? '관리자',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600, 
+                        fontSize: 14,
+                        color: textColor
                       ),
-                      const SizedBox(height: 2),
-                      // 장비 정보
-                      Text(
-                        '장비: ${maintenance.equipmentName}',
-                        style: TextStyle(
-                          color: CarbonColors.gray60,
-                          fontSize: 13,
-                        ),
+                    ),
+                    Text(
+                      '장비: ${maintenance.equipmentName}',
+                      style: TextStyle(
+                        color: secondaryColor,
+                        fontSize: 12,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                // 작업 유형 아이콘
+                const Spacer(),
+                // 날짜 및 시간
                 Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: actionColor.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    actionIcon,
-                    size: 16,
-                    color: actionColor,
+                  height: 40,
+                  alignment: Alignment.topRight,
+                  child: Text(
+                    '$formattedDate $formattedTime',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: secondaryColor,
+                    ),
                   ),
                 ),
               ],
             ),
             
-            // 내용
+            // 작업 타입 배지
             Padding(
-              padding: const EdgeInsets.only(left: 52, top: 8),
-              child: Text(
-                maintenance.issuesFound ?? maintenance.resolution ?? '유지보수 내용 없음',
-                style: TextStyle(color: textColor),
+              padding: const EdgeInsets.only(top: 8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: actionColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      actionIcon,
+                      size: 12,
+                      color: actionColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      maintenance.actionType,
+                      style: TextStyle(
+                        color: actionColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             
-            // 하단 상호작용 버튼들
-            Padding(
-              padding: const EdgeInsets.only(left: 40, top: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildInteractionButton(
-                    Icons.chat_bubble_outline,
-                    maintenance.commentCount.toString(),
-                    () {}, // 댓글 기능
-                    isDarkMode,
-                  ),
-                  _buildInteractionButton(
-                    Icons.repeat,
-                    '',
-                    () {}, // 리포스트 기능
-                    isDarkMode,
-                  ),
-                  _buildInteractionButton(
-                    Icons.favorite_border,
-                    maintenance.likeCount.toString(),
-                    () {}, // 좋아요 기능
-                    isDarkMode,
-                  ),
-                  _buildInteractionButton(
-                    Icons.share_outlined,
-                    '',
-                    () {}, // 공유 기능
-                    isDarkMode,
-                  ),
-                ],
+            // 내용
+            const SizedBox(height: 8),
+            Text(
+              maintenance.issuesFound ?? maintenance.resolution ?? '유지보수 내용 없음',
+              style: TextStyle(
+                fontSize: 14,
+                color: textColor,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            
+            // 하단 상호작용 버튼들
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  HugeIcons.strokeRoundedComment01,
+                  size: 16,
+                  color: secondaryColor,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  maintenance.commentCount.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: secondaryColor,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Icon(
+                  HugeIcons.strokeRoundedFavourite,
+                  size: 16,
+                  color: secondaryColor,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  maintenance.likeCount.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: secondaryColor,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  // 상호작용 버튼 생성
-  Widget _buildInteractionButton(
-    IconData icon, 
-    String count, 
-    VoidCallback onTap,
-    bool isDarkMode,
-  ) {
-    final buttonColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
-    
-    return InkWell(
-      onTap: onTap,
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: buttonColor),
-          if (count.isNotEmpty) const SizedBox(width: 4),
-          if (count.isNotEmpty)
-            Text(
-              count,
-              style: TextStyle(
-                fontSize: 13,
-                color: buttonColor,
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -1009,113 +1031,6 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
   
-  // 유지보수 옵션 모달
-  void _showMaintenanceOptions(Maintenance maintenance) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? CarbonColors.gray90 : Colors.white;
-    final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
-    
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: backgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: CarbonColors.gray60,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              _buildOptionItem(
-                icon: Icons.visibility,
-                text: '상세 정보 보기',
-                onTap: () {
-                  Navigator.pop(context);
-                  _showMaintenanceDetail(maintenance);
-                },
-              ),
-              _buildOptionItem(
-                icon: Icons.image,
-                text: '이미지 추가',
-                onTap: () {
-                  Navigator.pop(context);
-                  _navigateToImageUpload(maintenance.id);
-                },
-              ),
-              _buildOptionItem(
-                icon: Icons.edit,
-                text: '수정하기',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Edit maintenance - 미구현
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('수정 기능은 아직 준비 중입니다')),
-                  );
-                },
-              ),
-              _buildOptionItem(
-                icon: Icons.delete,
-                text: '삭제하기',
-                onTap: () {
-                  Navigator.pop(context);
-                  // Delete maintenance - 미구현
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('삭제 기능은 아직 준비 중입니다')),
-                  );
-                },
-                isDestructive: true,
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
-    );
-  }
-  
-  // 옵션 아이템 위젯
-  Widget _buildOptionItem({
-    required IconData icon,
-    required String text,
-    required VoidCallback onTap,
-    bool isDestructive = false,
-  }) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDestructive 
-        ? Colors.red
-        : (isDarkMode ? Colors.white : CarbonColors.gray100);
-    
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        child: Row(
-          children: [
-            Icon(icon, color: textColor, size: 20),
-            const SizedBox(width: 16),
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 14,
-                color: textColor,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // 이미지 업로드 화면으로 이동
   void _navigateToImageUpload(int maintenanceId) {
     Navigator.push(
@@ -1129,385 +1044,6 @@ class _FeedScreenState extends State<FeedScreen> {
           },
         ),
       ),
-    );
-  }
-
-  // 피드 게시물 작성 바텀시트 표시
-  void showCreateFeedPost(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
-    final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
-    final hintColor = isDarkMode ? Colors.grey[400] : Colors.grey[500];
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: backgroundColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-              left: 20,
-              right: 20,
-              top: 20,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 상단 바 - 제목과 닫기 버튼
-                Row(
-                  children: [
-                    Text(
-                      '새 게시물 작성',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: textColor,
-                      ),
-                    ),
-                    Spacer(),
-                    IconButton(
-                      icon: Icon(Icons.close, color: textColor),
-                      padding: EdgeInsets.zero,
-                      constraints: BoxConstraints(),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                
-                SizedBox(height: 20),
-                
-                // 프로필 및 입력 필드
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 프로필 이미지 (원형)
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: CarbonColors.blue60,
-                      child: Text(
-                        'A',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    // 입력 필드 (확장)
-                    Expanded(
-                      child: TextField(
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 16,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: '무슨 일이 일어나고 있나요?',
-                          hintStyle: TextStyle(
-                            color: hintColor,
-                            fontSize: 16,
-                          ),
-                          border: InputBorder.none,
-                        ),
-                        maxLines: 5,
-                        minLines: 3,
-                      ),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // 미디어 옵션 및 게시 버튼
-                Row(
-                  children: [
-                    // 미디어 옵션들
-                    _buildMediaOptionButton(
-                      Icons.photo_library,
-                      '갤러리',
-                      () => _pickImageFromGallery(context),
-                      isDarkMode,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildMediaOptionButton(
-                      Icons.camera_alt,
-                      '카메라',
-                      () => _pickImageFromCamera(context),
-                      isDarkMode,
-                    ),
-                    const SizedBox(width: 16),
-                    _buildMediaOptionButton(
-                      Icons.location_on,
-                      '위치', 
-                      () => _showSnackMessage(context, '위치 기능이 준비 중입니다'),
-                      isDarkMode,
-                    ),
-                    
-                    const Spacer(),
-                    
-                    // 게시 버튼
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: CarbonColors.blue60,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showSnackMessage(context, '게시물이 공유되었습니다');
-                      },
-                      child: Text(
-                        '게시하기',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-  
-  // 미디어 옵션 버튼 위젯
-  Widget _buildMediaOptionButton(
-    IconData icon,
-    String label,
-    VoidCallback onTap,
-    bool isDarkMode,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: CarbonColors.blue60,
-              size: 20,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 갤러리에서 이미지 선택
-  void _pickImageFromGallery(BuildContext context) async {
-    final ImagePicker picker = ImagePicker();
-    try {
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-      );
-      
-      if (image != null) {
-        Navigator.pop(context);
-        _showImagePreview(context, image);
-      }
-    } catch (e) {
-      print('갤러리 이미지 선택 오류: $e');
-      _showSnackMessage(context, '이미지를 선택하는 중에 오류가 발생했습니다');
-    }
-  }
-  
-  // 카메라로 사진 촬영
-  void _pickImageFromCamera(BuildContext context) async {
-    final ImagePicker picker = ImagePicker();
-    try {
-      final XFile? photo = await picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 80,
-      );
-      
-      if (photo != null) {
-        Navigator.pop(context);
-        _showImagePreview(context, photo);
-      }
-    } catch (e) {
-      print('카메라 이미지 촬영 오류: $e');
-      _showSnackMessage(context, '사진을 촬영하는 중에 오류가 발생했습니다');
-    }
-  }
-  
-  // 이미지 미리보기 표시
-  void _showImagePreview(BuildContext context, XFile imageFile) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? CarbonColors.gray100 : Colors.white;
-    final textColor = isDarkMode ? Colors.white : CarbonColors.gray100;
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: backgroundColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                left: 16,
-                right: 16,
-                top: 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 상단 프로필 및 게시 버튼 행
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 프로필 이미지 (원형)
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: CarbonColors.blue60,
-                        child: Icon(Icons.person, color: Colors.white),
-                      ),
-                      const SizedBox(width: 12),
-                      // 입력 필드 (확장)
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextField(
-                              style: TextStyle(color: textColor),
-                              decoration: InputDecoration(
-                                hintText: '무슨 일이 일어나고 있나요?',
-                                hintStyle: TextStyle(color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
-                                border: InputBorder.none,
-                              ),
-                              maxLines: 5,
-                              minLines: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // 이미지 미리보기 (둥근 모서리)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Stack(
-                      children: [
-                        Image.file(
-                          File(imageFile.path),
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 250,
-                        ),
-                        Positioned(
-                          right: 8,
-                          top: 8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.black.withOpacity(0.6),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.close, color: Colors.white, size: 18),
-                              onPressed: () {
-                                Navigator.pop(context);
-                                showCreateFeedPost(context);
-                              },
-                              constraints: const BoxConstraints(
-                                minWidth: 30,
-                                minHeight: 30,
-                              ),
-                              padding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // 미디어 옵션 및 게시 버튼
-                  Row(
-                    children: [
-                      // 미디어 옵션들
-                      IconButton(
-                        icon: Icon(Icons.photo_library, color: CarbonColors.blue60),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _pickImageFromGallery(context);
-                        },
-                        iconSize: 22,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.gif_box, color: CarbonColors.blue60),
-                        onPressed: () => _showSnackMessage(context, 'GIF 기능이 준비 중입니다'),
-                        iconSize: 22,
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.location_on, color: CarbonColors.blue60),
-                        onPressed: () => _showSnackMessage(context, '위치 기능이 준비 중입니다'),
-                        iconSize: 22,
-                      ),
-                      
-                      const Spacer(),
-                      
-                      // 게시 버튼 (둥근 버튼)
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: CarbonColors.blue60,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          minimumSize: Size(80, 36),
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _showSnackMessage(context, '게시물이 공유되었습니다');
-                        },
-                        child: const Text('게시', style: TextStyle(fontSize: 14)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                ],
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }
